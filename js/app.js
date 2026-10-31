@@ -35,8 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnModalCerrar = document.getElementById('btnModalCerrar');
   const btnModalDescargarXML = document.getElementById('btnModalDescargarXML');
 
-  // Correo de recepción por defecto
-  const DEFAULT_DESTINO = 'xuanizuni@gmail.com';
+  // Correo de recepción por defecto (Oficial Institucional)
+  const DEFAULT_DESTINO = 'Politecnicodelosllanos@gmail.com';
   if (inputDestino && !inputDestino.value) {
     inputDestino.value = DEFAULT_DESTINO;
   }
