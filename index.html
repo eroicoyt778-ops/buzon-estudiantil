@@ -28,39 +28,33 @@
     <!-- Formulario Principal -->
     <form id="formSugerencia" class="form-card">
       
-      <!-- Sección 1: Datos del remitente -->
+      <!-- Sección 1: Datos del remitente (100% Anónimo por defecto, nombre opcional) -->
       <fieldset class="form-section">
-        <legend class="section-title">1. Información del Estudiante</legend>
+        <legend class="section-title">1. Información del Remitente</legend>
 
-        <div class="form-group-checkbox">
-          <label class="checkbox-container">
-            <input type="checkbox" id="checkAnonimo">
-            <span class="checkbox-label">Deseo enviar esta sugerencia de manera anónima</span>
-          </label>
+        <div class="anonimo-banner">
+          <div class="anonimo-badge">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Envío Anónimo y Confidencial
+          </div>
+          <p class="anonimo-info">Tu propuesta es 100% anónima (no necesitas ingresar correo ni registrarte). Si deseas identificarte, puedes escribir tu nombre en la casilla opcional.</p>
         </div>
 
         <div class="form-row">
           <div class="form-group" id="grupoNombre">
-            <label for="nombreEstudiante">Nombre completo <span class="req">*</span></label>
-            <input type="text" id="nombreEstudiante" placeholder="Tu nombre y apellido" required>
+            <label for="nombreEstudiante">Tu nombre completo <span class="opt">(Opcional)</span></label>
+            <input type="text" id="nombreEstudiante" placeholder="Anónimo (o escribe tu nombre si deseas)">
           </div>
 
-          <div class="form-group" id="grupoCorreo">
-            <label for="correoEstudiante">Correo de contacto</label>
-            <input type="email" id="correoEstudiante" placeholder="ejemplo@correo.com">
+          <div class="form-group">
+            <label for="programaAcademico">Programa o Carrera <span class="req">*</span></label>
+            <input type="text" id="programaAcademico" placeholder="Ej. Sistemas, Contaduría, Enfermería..." required>
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="programaAcademico">Programa o Carrera <span class="req">*</span></label>
-            <input type="text" id="programaAcademico" placeholder="Ej. Contaduría, Sistemas, Enfermería..." required>
-          </div>
-
-          <div class="form-group">
-            <label for="semestre">Semestre o Jornada</label>
-            <input type="text" id="semestre" placeholder="Ej. 3° Semestre / Jornada Diurna">
-          </div>
+        <div class="form-group">
+          <label for="semestre">Semestre o Jornada <span class="opt">(Opcional)</span></label>
+          <input type="text" id="semestre" placeholder="Ej. 2° Semestre / Jornada Diurna">
         </div>
       </fieldset>
 
@@ -150,12 +144,12 @@
 
       <!-- Sección 3: Envío institucional -->
       <fieldset class="form-section">
-        <legend class="section-title">3. Destino Institucional</legend>
+        <legend class="section-title">3. Destino de la Propuesta</legend>
         
         <div class="form-group">
-          <label for="correoDestino">Correo o Gmail institucional receptor: <span class="req">*</span></label>
-          <input type="email" id="correoDestino" value="buzon.estudiantil@politecnicodelosllanos.edu.co" placeholder="ejemplo@gmail.com o correo institucional" required>
-          <span class="help-text">Tu propuesta se enviará de forma automática y directa a esta dirección. Puedes ingresar cualquier Gmail o correo para pruebas.</span>
+          <label for="correoDestino">Correo o Gmail de recepción: <span class="req">*</span></label>
+          <input type="email" id="correoDestino" value="xuanizuni@gmail.com" placeholder="xuanizuni@gmail.com" required>
+          <span class="help-text">La propuesta se enviará de forma automática y directa a este Gmail receptor.</span>
         </div>
       </fieldset>
 
