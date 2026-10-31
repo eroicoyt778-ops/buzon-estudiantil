@@ -1,0 +1,807 @@
+/* =========================================================
+   POLITÉCNICO DE LOS LLANOS - BUZÓN ESTUDIANTIL
+   Diseño Formal Institucional en Modo Blanco (Light Mode)
+   Animaciones Suaves y Fluidas Tipo Apple
+   ========================================================= */
+
+:root {
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-field: #ffffff;
+  --border-line: #e2e8f0;
+  --border-field: #cbd5e1;
+  --border-active: #dc2626;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+
+  /* Rojo Institucional (Politécnico de los Llanos) */
+  --red-primary: #dc2626;
+  --red-hover: #b91c1c;
+  --red-glow: rgba(220, 38, 38, 0.16);
+  --red-subtle: #fef2f2;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.07);
+  --shadow-card-hover: 0 16px 36px -6px rgba(15, 23, 42, 0.12);
+
+  /* Curvas de aceleración tipo Apple (Fluid iOS/macOS Spring Easing) */
+  --apple-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --apple-ease-slow: cubic-bezier(0.2, 0.9, 0.25, 1);
+  --duration-slow: 0.85s;
+  --duration-medium: 0.55s;
+  --duration-fast: 0.35s;
+}
+
+/* Reset y base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: var(--font-stack);
+  line-height: 1.55;
+  padding: 3rem 1.25rem;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 740px;
+  margin: 0 auto;
+}
+
+/* =========================================================
+   ANIMACIONES DE ENTRADA PROGRESIVA (APPLE STAGGER LOAD)
+   ========================================================= */
+
+@keyframes appleFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes appleScaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Encabezado */
+.header {
+  border-bottom: 1px solid var(--border-line);
+  padding-bottom: 1.75rem;
+  margin-bottom: 2rem;
+  animation: appleFadeUp var(--duration-slow) var(--apple-ease) 0.05s both;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Logo Oficial con micro-animación fluida */
+.logo-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #ffffff;
+  padding: 2px;
+  border: 2px solid var(--border-line);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  animation: appleScaleIn 1s var(--apple-ease) 0.15s both;
+  transition: transform 0.65s var(--apple-ease), box-shadow 0.65s var(--apple-ease);
+  cursor: pointer;
+}
+
+.logo-img:hover {
+  transform: scale(1.08) rotate(2deg);
+  box-shadow: 0 8px 24px rgba(220, 38, 38, 0.22);
+}
+
+.institution-name {
+  font-size: 1.02rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+  transition: color 0.4s var(--apple-ease);
+}
+
+.portal-tag {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.main-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+}
+
+.description {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  max-width: 650px;
+}
+
+/* =========================================================
+   TARJETA DE FORMULARIO CON ANIMACIÓN DE ENTRADA Y LEVITACIÓN
+   ========================================================= */
+
+.form-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-line);
+  border-top: 4px solid var(--red-primary);
+  border-radius: var(--radius-md);
+  padding: 2.25rem;
+  box-shadow: var(--shadow-card);
+  animation: appleFadeUp 1s var(--apple-ease) 0.2s both;
+  transition: transform 0.7s var(--apple-ease), box-shadow 0.7s var(--apple-ease), border-color 0.7s var(--apple-ease);
+}
+
+.form-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Secciones Formales con Entrada Escalonada */
+.form-section {
+  border: none;
+  border-top: 1px solid var(--border-line);
+  padding-top: 1.6rem;
+  margin-bottom: 1.8rem;
+  animation: appleFadeUp 0.85s var(--apple-ease) both;
+}
+
+.form-section:nth-of-type(1) { animation-delay: 0.32s; border-top: none; padding-top: 0; }
+.form-section:nth-of-type(2) { animation-delay: 0.45s; }
+.form-section:nth-of-type(3) { animation-delay: 0.58s; }
+
+.section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--text-primary);
+  margin-bottom: 1.15rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 15px;
+  background-color: var(--red-primary);
+  border-radius: 2px;
+  transition: transform 0.5s var(--apple-ease), height 0.5s var(--apple-ease);
+}
+
+.form-section:hover .section-title::before {
+  transform: scaleY(1.25);
+}
+
+/* Filas y Grupos */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+  transition: opacity 0.55s var(--apple-ease), transform 0.55s var(--apple-ease);
+}
+
+/* Casilla de verificación animada */
+.form-group-checkbox {
+  margin-bottom: 1.25rem;
+  padding: 0.75rem 1rem;
+  background-color: #f1f5f9;
+  border: 1px solid var(--border-line);
+  border-radius: var(--radius-sm);
+  transition: background-color 0.45s var(--apple-ease), border-color 0.45s var(--apple-ease), transform 0.45s var(--apple-ease);
+}
+
+.form-group-checkbox:hover {
+  background-color: #e2e8f0;
+  transform: translateX(2px);
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--red-primary);
+  cursor: pointer;
+  transition: transform 0.3s var(--apple-ease);
+}
+
+.checkbox-container input[type="checkbox"]:hover {
+  transform: scale(1.15);
+}
+
+.checkbox-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: color 0.3s var(--apple-ease);
+}
+
+label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+  transition: color 0.35s var(--apple-ease);
+}
+
+.req {
+  color: var(--red-primary);
+  font-weight: 700;
+  margin-left: 2px;
+  transition: transform 0.3s var(--apple-ease);
+  display: inline-block;
+}
+
+.form-group:focus-within label .req {
+  transform: scale(1.25);
+}
+
+/* =========================================================
+   CASILLA COMPACTA DESPLEGABLE DE ÁREA (ESTILO APPLE)
+   ========================================================= */
+
+.custom-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select-trigger {
+  width: 100%;
+  min-height: 45px;
+  background-color: var(--bg-field);
+  border: 1px solid var(--border-field);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 0.72rem 0.95rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  text-align: left;
+  outline: none;
+  user-select: none;
+  transition: border-color 0.45s var(--apple-ease), 
+              box-shadow 0.45s var(--apple-ease), 
+              background-color 0.45s var(--apple-ease),
+              transform 0.45s var(--apple-ease);
+}
+
+.custom-select-trigger:hover {
+  border-color: var(--red-hover);
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.08);
+}
+
+.custom-select-wrapper.open .custom-select-trigger {
+  border-color: var(--red-primary);
+  box-shadow: 0 0 0 3px var(--red-glow);
+  background-color: #ffffff;
+}
+
+.trigger-left {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Iconos minimalistas en color negro elegante */
+.trigger-icon,
+.item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f172a;
+  flex-shrink: 0;
+  transition: color 0.35s var(--apple-ease), transform 0.35s var(--apple-ease);
+}
+
+.trigger-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: transform 0.45s var(--apple-ease), color 0.35s var(--apple-ease);
+}
+
+.custom-select-wrapper.open .trigger-chevron {
+  transform: rotate(180deg);
+  color: var(--red-primary);
+}
+
+/* Menú desplegable flotante estilo Apple */
+.custom-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background-color: #ffffff;
+  border: 1px solid var(--border-line);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(0, 0, 0, 0.04);
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-8px) scale(0.98);
+  transition: opacity 0.35s var(--apple-ease), 
+              transform 0.35s var(--apple-ease), 
+              visibility 0.35s var(--apple-ease);
+}
+
+.custom-select-wrapper.open .custom-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+/* Elementos dentro del menú desplegable */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 4px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.25s var(--apple-ease), 
+              color 0.25s var(--apple-ease), 
+              transform 0.25s var(--apple-ease),
+              padding-left 0.25s var(--apple-ease);
+}
+
+.dropdown-item:hover {
+  background-color: var(--red-subtle);
+  color: var(--red-primary);
+  padding-left: 1.05rem;
+}
+
+.dropdown-item:hover .item-icon {
+  color: var(--red-primary);
+  transform: scale(1.15);
+}
+
+.dropdown-item.selected {
+  background-color: var(--red-subtle);
+  color: var(--red-primary);
+  font-weight: 700;
+}
+
+.dropdown-item.selected .item-icon {
+  color: var(--red-primary);
+}
+
+@keyframes appleShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.custom-select-wrapper.shake {
+  animation: appleShake 0.45s var(--apple-ease);
+}
+
+/* =========================================================
+   CAMPOS DE ENTRADA CON TRANSICIÓN SUAVE TIPO APPLE
+   ========================================================= */
+
+input[type="text"],
+input[type="email"],
+select,
+textarea {
+  width: 100%;
+  background-color: var(--bg-field);
+  border: 1px solid var(--border-field);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 0.78rem 0.95rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.45s var(--apple-ease), 
+              box-shadow 0.45s var(--apple-ease), 
+              background-color 0.45s var(--apple-ease),
+              transform 0.45s var(--apple-ease);
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--red-primary);
+  box-shadow: 0 0 0 4px var(--red-glow);
+  transform: translateY(-1px);
+  background-color: #ffffff;
+}
+
+input:disabled {
+  background-color: #f1f5f9;
+  color: var(--text-muted);
+  border-color: var(--border-line);
+  cursor: not-allowed;
+  opacity: 0.65;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+select {
+  cursor: pointer;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.help-text {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  margin-top: 0.35rem;
+  transition: color 0.3s var(--apple-ease);
+}
+
+/* =========================================================
+   BOTONES INTERACTIVOS (PRESION Y ELEVACIÓN TIPO APPLE)
+   ========================================================= */
+
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 2rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--border-line);
+  animation: appleFadeUp 0.85s var(--apple-ease) 0.68s both;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.9rem 1.5rem;
+  font-size: 0.93rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+  user-select: none;
+  transition: transform 0.45s var(--apple-ease), 
+              box-shadow 0.45s var(--apple-ease), 
+              background-color 0.45s var(--apple-ease), 
+              border-color 0.45s var(--apple-ease),
+              opacity 0.45s var(--apple-ease);
+}
+
+/* Pulsación táctil (Tactile Apple compression on click) */
+.btn:active {
+  transform: scale(0.975);
+}
+
+/* Botón principal en rojo institucional */
+.btn-primary {
+  background-color: var(--red-primary);
+  color: #ffffff;
+  border: 1px solid var(--red-primary);
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.28);
+}
+
+.btn-primary:hover {
+  background-color: var(--red-hover);
+  border-color: var(--red-hover);
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.38);
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  transform: scale(0.975);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
+}
+
+/* Botón secundario */
+.btn-secondary {
+  background-color: #ffffff;
+  color: var(--text-primary);
+  border: 1px solid var(--border-field);
+}
+
+.btn-secondary:hover {
+  background-color: #f8fafc;
+  border-color: var(--text-secondary);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: scale(0.975);
+}
+
+/* =========================================================
+   NOTIFICACION FLOTANTE FLUIDA (APPLE DYNAMIC BANNER)
+   ========================================================= */
+
+.alert-box {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background-color: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #ffffff;
+  border-left: 4px solid var(--red-primary);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-left-width: 4px;
+  border-left-color: var(--red-primary);
+  padding: 0.95rem 1.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 600;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25);
+  display: none;
+  z-index: 1000;
+  transition: opacity 0.5s var(--apple-ease), transform 0.5s var(--apple-ease);
+}
+
+.alert-box.show {
+  display: block;
+  animation: appleToastIn 0.6s var(--apple-ease) forwards;
+}
+
+.alert-box.hide {
+  animation: appleToastOut 0.5s var(--apple-ease) forwards;
+}
+
+@keyframes appleToastIn {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes appleToastOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+}
+
+/* Pie de página con aparición sutil */
+.footer {
+  text-align: center;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-line);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  animation: appleFadeUp var(--duration-slow) var(--apple-ease) 0.8s both;
+}
+
+.footer-sub {
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  color: #94a3b8;
+}
+
+/* Responsivo */
+@media (max-width: 640px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .form-card {
+    padding: 1.35rem;
+  }
+  .main-title {
+    font-size: 1.4rem;
+  }
+}
+
+/* =========================================================
+   ACCIONES SECUNDARIAS, SPINNER Y MODAL ELEGANTE
+   ========================================================= */
+
+.actions-row-secondary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+@media (max-width: 600px) {
+  .actions-row-secondary {
+    grid-template-columns: 1fr;
+  }
+}
+
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spinBtn 0.75s linear infinite;
+  display: inline-block;
+  margin-right: 4px;
+}
+
+@keyframes spinBtn {
+  to { transform: rotate(360deg); }
+}
+
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Modal de confirmación elegante */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  z-index: 2000;
+  animation: appleOverlayFadeIn 0.3s var(--apple-ease) forwards;
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+@keyframes appleOverlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-card {
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  max-width: 520px;
+  width: 100%;
+  padding: 2.25rem 2rem;
+  text-align: center;
+  box-shadow: 0 24px 60px -12px rgba(15, 23, 42, 0.25);
+  border: 1px solid var(--border-line);
+  animation: appleModalPop 0.4s var(--apple-ease) forwards;
+}
+
+@keyframes appleModalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-icon-success {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #16a34a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.2);
+}
+
+.modal-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.65rem;
+  letter-spacing: -0.02em;
+}
+
+.modal-desc {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-bottom: 1.25rem;
+}
+
+.modal-details {
+  background: #f8fafc;
+  border: 1px solid var(--border-line);
+  border-radius: var(--radius-sm);
+  padding: 0.9rem 1.1rem;
+  text-align: left;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.modal-details strong {
+  color: var(--text-primary);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+@media (max-width: 480px) {
+  .modal-actions {
+    flex-direction: column;
+  }
+}

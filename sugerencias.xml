@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="estilo.xsl"?>
+<buzonEstudiantil institucion="Politécnico de los Llanos">
+  <fechaRegistro>2026-03-18</fechaRegistro>
+  <remitente anonimo="false">
+    <nombre>Estudiante Ejemplo</nombre>
+    <correo>estudiante@correo.com</correo>
+    <programa>Administración de Empresas</programa>
+    <semestre>4° Semestre</semestre>
+  </remitente>
+  <propuesta>
+    <area>Salud Mental y Bienestar</area>
+    <asunto>Habilitación de zona silenciosa para estudio y descanso</asunto>
+    <situacionActual>Durante las semanas de exámenes se presentan altos niveles de estrés y no hay espacios tranquilos en la sede.</situacionActual>
+    <solucionPropuesta>Acondicionar una sala con luz tenue y mobiliario cómodo para desconexión y estudio individual.</solucionPropuesta>
+  </propuesta>
+</buzonEstudiantil>

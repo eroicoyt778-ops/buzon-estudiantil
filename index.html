@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buzón de Sugerencias • Politécnico de los Llanos</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- Encabezado Institucional -->
+    <header class="header">
+      <div class="logo-area">
+        <img src="img/logo.jpg" alt="Logo Politécnico de los Llanos" class="logo-img">
+        <div>
+          <div class="institution-name">POLITÉCNICO DE LOS LLANOS</div>
+          <div class="portal-tag">Institución de Educación para el Trabajo y el Desarrollo Humano</div>
+        </div>
+      </div>
+      <h1 class="main-title">Buzón de Sugerencias Estudiantiles</h1>
+      <p class="description">
+        Canal formal para que los estudiantes propongan mejoras en la convivencia, infraestructura, bienestar y calidad del ambiente académico.
+      </p>
+    </header>
+
+    <!-- Formulario Principal -->
+    <form id="formSugerencia" class="form-card">
+      
+      <!-- Sección 1: Datos del remitente -->
+      <fieldset class="form-section">
+        <legend class="section-title">1. Información del Estudiante</legend>
+
+        <div class="form-group-checkbox">
+          <label class="checkbox-container">
+            <input type="checkbox" id="checkAnonimo">
+            <span class="checkbox-label">Deseo enviar esta sugerencia de manera anónima</span>
+          </label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group" id="grupoNombre">
+            <label for="nombreEstudiante">Nombre completo <span class="req">*</span></label>
+            <input type="text" id="nombreEstudiante" placeholder="Tu nombre y apellido" required>
+          </div>
+
+          <div class="form-group" id="grupoCorreo">
+            <label for="correoEstudiante">Correo de contacto</label>
+            <input type="email" id="correoEstudiante" placeholder="ejemplo@correo.com">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="programaAcademico">Programa o Carrera <span class="req">*</span></label>
+            <input type="text" id="programaAcademico" placeholder="Ej. Contaduría, Sistemas, Enfermería..." required>
+          </div>
+
+          <div class="form-group">
+            <label for="semestre">Semestre o Jornada</label>
+            <input type="text" id="semestre" placeholder="Ej. 3° Semestre / Jornada Diurna">
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Sección 2: Propuesta de Mejora -->
+      <fieldset class="form-section">
+        <legend class="section-title">2. Propuesta de Mejora</legend>
+
+        <div class="form-row">
+          <!-- Casilla compacta de área de sugerencia estilo Apple -->
+          <div class="form-group">
+            <label for="categoriaTrigger">Área de la sugerencia <span class="req">*</span></label>
+            <div class="custom-select-wrapper" id="customSelectWrapper">
+              <button type="button" class="custom-select-trigger" id="categoriaTrigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="trigger-left">
+                  <span class="trigger-icon" id="triggerIcon">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg>
+                  </span>
+                  <span class="trigger-text" id="triggerText">Selecciona un área...</span>
+                </span>
+                <span class="trigger-chevron">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </span>
+              </button>
+
+              <!-- Menú desplegable compacto -->
+              <div class="custom-dropdown-menu" id="customDropdownMenu" role="listbox">
+                <div class="dropdown-item" data-value="Salud Mental y Apoyo Psicosocial" role="option">
+                  <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                  <span>Salud Mental y Bienestar</span>
+                </div>
+                <div class="dropdown-item" data-value="Aulas, Baños e Infraestructura" role="option">
+                  <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01"/></svg>
+                  <span>Aulas e Infraestructura</span>
+                </div>
+                <div class="dropdown-item" data-value="Convivencia y Prevención del Acoso" role="option">
+                  <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <span>Convivencia y Respeto</span>
+                </div>
+                <div class="dropdown-item" data-value="Cafetería y Zonas de Comedor" role="option">
+                  <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/></svg>
+                  <span>Cafetería y Alimentación</span>
+                </div>
+                <div class="dropdown-item" data-value="Biblioteca y Recursos de Estudio" role="option">
+                  <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10"/></svg>
+                  <span>Biblioteca y Salas de Estudio</span>
+                </div>
+                <div class="dropdown-item" data-value="Transporte y Seguridad" role="option">
+                  <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16M8 15h.01M16 15h.01M6 19v2M18 19v2"/></svg>
+                  <span>Transporte y Accesos</span>
+                </div>
+                <div class="dropdown-item" data-value="Otra" role="option">
+                  <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6M10 22h4"/></svg>
+                  <span>Otra iniciativa</span>
+                </div>
+              </div>
+
+              <!-- Select oculto para validación nativa y procesamiento XML -->
+              <select id="categoria" name="categoria" required style="position: absolute; opacity: 0; pointer-events: none; height: 1px; width: 1px;">
+                <option value="" disabled selected>Selecciona un área...</option>
+                <option value="Salud Mental y Apoyo Psicosocial">Salud Mental y Bienestar</option>
+                <option value="Aulas, Baños e Infraestructura">Aulas, Baños e Infraestructura</option>
+                <option value="Convivencia y Prevención del Acoso">Convivencia y Respeto</option>
+                <option value="Cafetería y Zonas de Comedor">Cafetería y Alimentación</option>
+                <option value="Biblioteca y Recursos de Estudio">Biblioteca y Salas de Estudio</option>
+                <option value="Transporte y Seguridad">Transporte y Accesos al Campus</option>
+                <option value="Otra">Otra iniciativa</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="asunto">Asunto o título principal <span class="req">*</span></label>
+            <input type="text" id="asunto" placeholder="Ej. Instalación de microondas en cafetería" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="situacionActual">¿Cuál es el problema o necesidad observada? <span class="req">*</span></label>
+          <textarea id="situacionActual" rows="3" placeholder="Describe brevemente qué ocurre actualmente en la institución..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="propuestaSolucion">¿Cuál es tu propuesta de solución? <span class="req">*</span></label>
+          <textarea id="propuestaSolucion" rows="4" placeholder="Explica detalladamente tu propuesta y cómo mejoraría el ambiente estudiantil..." required></textarea>
+        </div>
+      </fieldset>
+
+      <!-- Sección 3: Envío institucional -->
+      <fieldset class="form-section">
+        <legend class="section-title">3. Destino Institucional</legend>
+        
+        <div class="form-group">
+          <label for="correoDestino">Correo o Gmail institucional receptor: <span class="req">*</span></label>
+          <input type="email" id="correoDestino" value="buzon.estudiantil@politecnicodelosllanos.edu.co" placeholder="ejemplo@gmail.com o correo institucional" required>
+          <span class="help-text">Tu propuesta se enviará de forma automática y directa a esta dirección. Puedes ingresar cualquier Gmail o correo para pruebas.</span>
+        </div>
+      </fieldset>
+
+      <!-- Botones de Acción -->
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" id="btnEnviar">
+          <span class="btn-spinner" id="btnSpinner" hidden></span>
+          <span class="btn-text" id="btnTexto">✉️ Enviar Sugerencia al Correo</span>
+        </button>
+        <div class="actions-row-secondary">
+          <button type="button" class="btn btn-secondary" id="btnGmailDirecto" title="Abrir y enviar desde Gmail Web en el navegador">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>
+            Abrir en Gmail Web
+          </button>
+          <button type="button" class="btn btn-secondary" id="btnDescargarXML" title="Descargar constancia formal en archivo XML">
+            📄 Descargar Registro XML
+          </button>
+        </div>
+      </div>
+
+    </form>
+
+    <!-- Pie de página formal -->
+    <footer class="footer">
+      <p>Politécnico de los Llanos • Proyecto de Buzón Estudiantil</p>
+      <p class="footer-sub">Canal oficial de comunicación y bienestar estudiantil · estudiantes.xuanii.com</p>
+    </footer>
+
+  </div>
+
+  <!-- Modal de Confirmación de Envío -->
+  <div id="modalConfirmacion" class="modal-overlay" hidden>
+    <div class="modal-card">
+      <div class="modal-icon-success">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h3 class="modal-title" id="modalTitulo">¡Propuesta Enviada con Éxito!</h3>
+      <p class="modal-desc" id="modalDesc">
+        Tu sugerencia ha sido enviada al servidor y entregada en la bandeja de entrada del correo institucional.
+      </p>
+      <div class="modal-details" id="modalDetalles"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" id="btnModalCerrar">Entendido</button>
+        <button type="button" class="btn btn-secondary" id="btnModalDescargarXML">📄 Descargar XML</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje de confirmación -->
+  <div id="alerta" class="alert-box" role="status" aria-live="polite"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

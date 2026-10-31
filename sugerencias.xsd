@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+  <!-- Elemento raíz -->
+  <xs:element name="buzon">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="categorias" type="CategoriasTipo"/>
+        <xs:element name="sugerencias" type="SugerenciasTipo"/>
+      </xs:sequence>
+      <xs:attribute name="version" type="xs:string" use="required"/>
+      <xs:attribute name="institucion" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Definición de Categorías -->
+  <xs:complexType name="CategoriasTipo">
+    <xs:sequence>
+      <xs:element name="categoria" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="id" type="xs:string" use="required"/>
+              <xs:attribute name="icono" type="xs:string" use="optional"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Definición del Contenedor de Sugerencias -->
+  <xs:complexType name="SugerenciasTipo">
+    <xs:sequence>
+      <xs:element name="sugerencia" type="SugerenciaTipo" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Tipo Sugerencia Individual -->
+  <xs:complexType name="SugerenciaTipo">
+    <xs:sequence>
+      <xs:element name="titulo" type="xs:string"/>
+      <xs:element name="categoria">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="ref" type="xs:string" use="required"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="autor" type="AutorTipo"/>
+      <xs:element name="fecha" type="xs:date"/>
+      <xs:element name="votos" type="xs:nonNegativeInteger"/>
+      <xs:element name="descripcion" type="xs:string"/>
+      <xs:element name="impacto" type="xs:string"/>
+      <xs:element name="beneficios" type="BeneficiosTipo" minOccurs="0"/>
+      <xs:element name="etiquetas" type="EtiquetasTipo" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+    <xs:attribute name="estado" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="En Revision"/>
+          <xs:enumeration value="Aprobada"/>
+          <xs:enumeration value="En Marcha"/>
+          <xs:enumeration value="Cumplida"/>
+          <xs:enumeration value="Descartada"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="prioridad" use="optional">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="Alta"/>
+          <xs:enumeration value="Media"/>
+          <xs:enumeration value="Baja"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+
+  <!-- Tipo Autor -->
+  <xs:complexType name="AutorTipo">
+    <xs:sequence>
+      <xs:element name="nombre" type="xs:string"/>
+      <xs:element name="carrera" type="xs:string"/>
+      <xs:element name="semestre" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="anonimo" type="xs:boolean" default="false"/>
+  </xs:complexType>
+
+  <!-- Tipo Beneficios -->
+  <xs:complexType name="BeneficiosTipo">
+    <xs:sequence>
+      <xs:element name="beneficio" type="xs:string" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Tipo Etiquetas -->
+  <xs:complexType name="EtiquetasTipo">
+    <xs:sequence>
+      <xs:element name="tag" type="xs:string" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
