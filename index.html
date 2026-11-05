@@ -4,13 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Buzón de Sugerencias • Politécnico de los Llanos</title>
+  
+  <!-- Aquí enlazo mi hoja de estilos CSS. Le puse '?v=6.0' para obligar al navegador
+       a cargar siempre los estilos frescos y evitar que se quede pegado con la caché -->
   <link rel="stylesheet" href="css/styles.css?v=6.0">
 </head>
 <body>
 
+  <!-- Contenedor general que centra todo el diseño en el medio de la pantalla -->
   <div class="container">
     
-    <!-- Encabezado Institucional -->
+    <!-- ENCABEZADO INSTITUCIONAL:
+         Aquí construí la cabecera principal con el logotipo oficial del Politécnico,
+         el nombre de la institución y una pequeña descripción que le explica al
+         estudiante la importancia de participar y proponer mejoras. -->
     <header class="header">
       <div class="logo-area">
         <img src="img/logo.jpg" alt="Logo Politécnico de los Llanos" class="logo-img">
@@ -25,10 +32,16 @@
       </p>
     </header>
 
-    <!-- Formulario Principal -->
+    <!-- FORMULARIO PRINCIPAL:
+         Aquí estructuré todos los campos dentro de una tarjeta blanca ('form-card')
+         con un borde superior rojo representativo del Politécnico. -->
     <form id="formSugerencia" class="form-card">
       
-      <!-- Botón Simple y Directo de Modo Anónimo -->
+      <!-- BOTÓN DIRECTO DE MODO ANÓNIMO:
+           Este botón lo diseñé para que sea directo y sin complicaciones para los estudiantes.
+           Por defecto siempre arranca en modo 'Anónimo' (verde con el candado 🔒).
+           Si el usuario hace clic aquí, desde JavaScript lo cambio a 'No Anónimo' (azul con icono 👤)
+           y despliego la sección de sus datos personales. -->
       <div class="toggle-mode-container">
         <button type="button" class="btn-anonimo-directo is-anonimo" id="btnToggleModo">
           <span class="btn-anonimo-icon" id="btnAnonimoIcon">🔒</span>
@@ -36,22 +49,28 @@
         </button>
       </div>
 
-      <!-- Sección de Datos del Estudiante (SOLO visible si No Anónimo) -->
+      <!-- SECCIÓN CONDICIONAL DE DATOS DEL ESTUDIANTE:
+           La dejé inicialmente con 'style="display: none;"' y la clase 'is-hidden'
+           para que por defecto no se vea en pantalla. Solo se hace visible y se vuelve
+           obligatoria cuando el estudiante desactiva el modo anónimo. -->
       <fieldset class="form-section is-hidden" id="seccionDatosEstudiante" style="display: none;">
         <legend class="section-title">Información del Estudiante</legend>
 
         <div class="form-row">
+          <!-- Campo para el nombre completo -->
           <div class="form-group" id="grupoNombre">
             <label for="nombreEstudiante">Nombre completo <span class="req">*</span></label>
             <input type="text" id="nombreEstudiante" placeholder="Tu nombre y apellido">
           </div>
 
+          <!-- Campo para la carrera o programa técnico -->
           <div class="form-group" id="grupoPrograma">
             <label for="programaAcademico">Programa o Carrera <span class="req">*</span></label>
             <input type="text" id="programaAcademico" placeholder="Ej. Sistemas, Contaduría, Enfermería...">
           </div>
         </div>
 
+        <!-- Selector con los grados de secundaria (6° a 11°) y semestres técnicos (1° a 6°) -->
         <div class="form-group" id="grupoGrado">
           <label for="gradoEstudiante">Grado <span class="req">*</span></label>
           <select id="gradoEstudiante" class="field-select">
@@ -77,12 +96,16 @@
         </div>
       </fieldset>
 
-      <!-- Sección 2: Propuesta de Mejora -->
+      <!-- SECCIÓN DE LA PROPUESTA DE MEJORA:
+           Aquí agrupé el núcleo de la sugerencia: el área temática, el asunto y la descripción detallada. -->
       <fieldset class="form-section">
         <legend class="section-title">Propuesta de Mejora</legend>
 
         <div class="form-row">
-          <!-- Casilla compacta de área de sugerencia estilo Apple -->
+          <!-- SELECTOR PERSONALIZADO DE ÁREAS:
+               Construí este desplegable con estilo interactivo tipo Apple para que muestre
+               iconos visuales y textos claros al abrirse. Abajo dejé un select nativo oculto
+               para que el formulario guarde el valor seleccionado y lo valide sin errores. -->
           <div class="form-group">
             <label for="categoriaTrigger">Área de la sugerencia <span class="req">*</span></label>
             <div class="custom-select-wrapper" id="customSelectWrapper">
@@ -98,7 +121,7 @@
                 </span>
               </button>
 
-              <!-- Menú desplegable compacto -->
+              <!-- Menú con las opciones temáticas e iconos SVG -->
               <div class="custom-dropdown-menu" id="customDropdownMenu" role="listbox">
                 <div class="dropdown-item" data-value="Salud Mental y Apoyo Psicosocial" role="option">
                   <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
@@ -130,7 +153,7 @@
                 </div>
               </div>
 
-              <!-- Select oculto para validación nativa y procesamiento XML -->
+              <!-- Select nativo oculto: aquí se sincroniza el valor seleccionado para validarlo -->
               <select id="categoria" name="categoria" required style="position: absolute; opacity: 0; pointer-events: none; height: 1px; width: 1px;">
                 <option value="" disabled selected>Selecciona un área...</option>
                 <option value="Salud Mental y Apoyo Psicosocial">Salud Mental y Bienestar</option>
@@ -144,27 +167,34 @@
             </div>
           </div>
 
+          <!-- Asunto o título breve de la propuesta -->
           <div class="form-group">
             <label for="asunto">Asunto o título principal <span class="req">*</span></label>
             <input type="text" id="asunto" placeholder="Ej. Instalación de microondas en cafetería" required>
           </div>
         </div>
 
+        <!-- Descripción del problema o situación observada -->
         <div class="form-group">
           <label for="situacionActual">¿Cuál es el problema o necesidad observada? <span class="req">*</span></label>
           <textarea id="situacionActual" rows="3" placeholder="Describe brevemente qué ocurre actualmente en la institución..." required></textarea>
         </div>
 
+        <!-- Propuesta concreta de solución -->
         <div class="form-group">
           <label for="propuestaSolucion">¿Cuál es tu propuesta de solución? <span class="req">*</span></label>
           <textarea id="propuestaSolucion" rows="4" placeholder="Explica detalladamente tu propuesta y cómo mejoraría el ambiente estudiantil..." required></textarea>
         </div>
       </fieldset>
 
-      <!-- Correo de recepción oculto (invisible en la web para los usuarios) -->
+      <!-- CORREO RECEPTOR INVISIBLE:
+           Aquí configuré el correo institucional oficial (Politecnicodelosllanos@gmail.com).
+           Lo dejé como campo oculto (type="hidden") para que los visitantes de la web
+           NO lo vean en pantalla pero el sistema sepa exactamente a dónde mandar el correo. -->
       <input type="hidden" id="correoDestino" name="_to" value="Politecnicodelosllanos@gmail.com">
 
-      <!-- Botón de Acción -->
+      <!-- BOTÓN PRINCIPAL DE ENVÍO:
+           Contiene el texto de acción y el indicador de carga (spinner) que activo con JS -->
       <div class="form-actions">
         <button type="submit" class="btn btn-primary" id="btnEnviar">
           <span class="btn-spinner" id="btnSpinner" hidden></span>
@@ -174,7 +204,8 @@
 
     </form>
 
-    <!-- Pie de página formal -->
+    <!-- PIE DE PÁGINA:
+         Créditos formales del proyecto y dominio oficial -->
     <footer class="footer">
       <p>Politécnico de los Llanos • Proyecto de Buzón Estudiantil</p>
       <p class="footer-sub">Canal oficial de comunicación y bienestar estudiantil · estudiantes.xuanii.com</p>
@@ -182,7 +213,9 @@
 
   </div>
 
-  <!-- Modal de Confirmación de Envío -->
+  <!-- MODAL DE CONFIRMACIÓN:
+       Esta ventana emergente la programé para que aparezca cuando el envío sea exitoso,
+       mostrando un resumen de lo enviado con su check verde animado. -->
   <div id="modalConfirmacion" class="modal-overlay" hidden>
     <div class="modal-card">
       <div class="modal-icon-success">
@@ -201,9 +234,10 @@
     </div>
   </div>
 
-  <!-- Mensaje de confirmación -->
+  <!-- Toast o alerta flotante para mensajes rápidos de validación o advertencia -->
   <div id="alerta" class="alert-box" role="status" aria-live="polite"></div>
 
+  <!-- Enlace al controlador JavaScript principal con control de versión -->
   <script src="js/app.js?v=6.0"></script>
 </body>
 </html>

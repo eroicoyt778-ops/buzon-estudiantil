@@ -1,20 +1,39 @@
 /**
  * POLITÉCNICO DE LOS LLANOS - BUZÓN ESTUDIANTIL
- * Controlador del formulario de sugerencias con selector de modo (Anónimo vs No Anónimo),
- * ocultamiento condicional de campos y envío directo a Gmail / Correo institucional.
+ * -------------------------------------------------------------
+ * Código JavaScript principal que desarrollé para el formulario.
+ * Aquí manejo:
+ * 1. La alternancia directa entre modo Anónimo y No Anónimo.
+ * 2. El despliegue de los campos personales sólo si el estudiante desea identificarse.
+ * 3. El menú interactivo de categorías temáticas.
+ * 4. La validación de los datos antes de enviarlos.
+ * 5. El envío asíncrono con límite de tiempo (timeout) para evitar bloqueos del botón.
+ * 6. La ventana modal de confirmación con diseño limpio y formal.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  
+  // =========================================================
+  // 1. CAPTURA DE ELEMENTOS DEL DOM
+  // Aquí guardo en constantes todos los elementos que voy a manipular
+  // con JavaScript para no tener que buscarlos repetidamente.
+  // =========================================================
+
+  // Elemento del formulario principal
   const form = document.getElementById('formSugerencia');
+
+  // Elementos del botón directo de modo anónimo
   const btnToggleModo = document.getElementById('btnToggleModo');
   const btnAnonimoIcon = document.getElementById('btnAnonimoIcon');
   const btnAnonimoTexto = document.getElementById('btnAnonimoTexto');
-  const seccionDatosEstudiante = document.getElementById('seccionDatosEstudiante');
 
+  // Sección condicional que contiene Nombre, Carrera y Grado
+  const seccionDatosEstudiante = document.getElementById('seccionDatosEstudiante');
   const inputNombre = document.getElementById('nombreEstudiante');
   const inputPrograma = document.getElementById('programaAcademico');
   const selectGrado = document.getElementById('gradoEstudiante');
 
+  // Elementos de la casilla desplegable personalizada para las áreas de sugerencia
   const selectCategoria = document.getElementById('categoria');
   const customSelectWrapper = document.getElementById('customSelectWrapper');
   const categoriaTrigger = document.getElementById('categoriaTrigger');
@@ -22,37 +41,51 @@ document.addEventListener('DOMContentLoaded', () => {
   const triggerIcon = document.getElementById('triggerIcon');
   const dropdownItems = document.querySelectorAll('.dropdown-item');
 
+  // Campos de texto de la propuesta
   const inputAsunto = document.getElementById('asunto');
   const textareaSituacion = document.getElementById('situacionActual');
   const textareaSolucion = document.getElementById('propuestaSolucion');
   const inputDestino = document.getElementById('correoDestino');
   const alerta = document.getElementById('alerta');
 
+  // Botón de envío y su indicador de carga animado (spinner)
   const btnEnviar = document.getElementById('btnEnviar');
   const btnSpinner = document.getElementById('btnSpinner');
   const btnTexto = document.getElementById('btnTexto');
 
+  // Elementos de la ventana modal de confirmación
   const modalConfirmacion = document.getElementById('modalConfirmacion');
   const modalTitulo = document.getElementById('modalTitulo');
   const modalDesc = document.getElementById('modalDesc');
   const modalDetalles = document.getElementById('modalDetalles');
   const btnModalCerrar = document.getElementById('btnModalCerrar');
 
-  // Correo de recepción por defecto (Oficial Institucional)
+  // Correo institucional oficial al que se entregan todas las propuestas
   const DEFAULT_DESTINO = 'Politecnicodelosllanos@gmail.com';
   if (inputDestino && !inputDestino.value) {
     inputDestino.value = DEFAULT_DESTINO;
   }
 
   // =========================================================
-  // BOTÓN SIMPLE Y DIRECTO (ANÓNIMO VS NO ANÓNIMO)
+  // 2. LÓGICA DEL BOTÓN SIMPLE DE MODO ANÓNIMO
+  // Aquí programé cómo funciona la privacidad del envío.
   // =========================================================
-  let esModoAnonimo = true; // Por defecto es Anónimo
 
+  // Esta variable guarda si el modo anónimo está prendido o apagado
+  let esModoAnonimo = true; // Por defecto siempre arranco en Anónimo
+
+  /**
+   * Con esta función controlo el estado visual del botón y la visibilidad
+   * de los campos de datos personales del estudiante.
+   * @param {boolean} anonimo - true para anónimo, false para identificado
+   * @param {boolean} enfocar - true si quiero poner el cursor en el input de nombre
+   */
   function aplicarModo(anonimo, enfocar = false) {
     esModoAnonimo = Boolean(anonimo);
 
     if (esModoAnonimo) {
+      // MODO ANÓNIMO:
+      // 1. Pongo el botón en estilo verde con candado 🔒
       if (btnToggleModo) {
         btnToggleModo.className = 'btn-anonimo-directo is-anonimo';
         btnToggleModo.setAttribute('aria-pressed', 'true');
@@ -60,10 +93,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (btnAnonimoIcon) btnAnonimoIcon.textContent = '🔒';
       if (btnAnonimoTexto) btnAnonimoTexto.textContent = 'Anónimo';
 
+      // 2. Oculto por completo la sección de datos personales
       if (seccionDatosEstudiante) {
         seccionDatosEstudiante.classList.add('is-hidden');
         seccionDatosEstudiante.style.display = 'none';
       }
+
+      // 3. Quito la obligatoriedad y limpio los campos por si había escrito algo
       if (inputNombre) {
         inputNombre.required = false;
         inputNombre.value = '';
@@ -77,6 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
         selectGrado.value = '';
       }
     } else {
+      // MODO NO ANÓNIMO (IDENTIFICARSE):
+      // 1. Cambio el botón a estilo azul con icono de persona 👤
       if (btnToggleModo) {
         btnToggleModo.className = 'btn-anonimo-directo is-no-anonimo';
         btnToggleModo.setAttribute('aria-pressed', 'false');
@@ -84,32 +122,39 @@ document.addEventListener('DOMContentLoaded', () => {
       if (btnAnonimoIcon) btnAnonimoIcon.textContent = '👤';
       if (btnAnonimoTexto) btnAnonimoTexto.textContent = 'No Anónimo';
 
+      // 2. Hago visible la sección de datos del estudiante
       if (seccionDatosEstudiante) {
         seccionDatosEstudiante.classList.remove('is-hidden');
         seccionDatosEstudiante.style.display = 'block';
       }
+
+      // 3. Vuelvo obligatorios los campos para que la propuesta quede bien identificada
       if (inputNombre) inputNombre.required = true;
       if (inputPrograma) inputPrograma.required = true;
       if (selectGrado) selectGrado.required = true;
 
+      // 4. Si el usuario acaba de tocar el botón, enfoco el cursor directamente en el nombre
       if (enfocar && inputNombre) {
         setTimeout(() => inputNombre.focus(), 80);
       }
     }
   }
 
-  // Click en el botón conmuta directamente entre Anónimo y No Anónimo
+  // Al hacer clic en el botón de modo, simplemente invierto el valor actual (!esModoAnonimo)
   btnToggleModo?.addEventListener('click', (e) => {
     e.preventDefault();
     aplicarModo(!esModoAnonimo, true);
   });
 
-  // Inicializar en Anónimo
+  // Inicializo la página asegurándome de que arranque en Anónimo
   aplicarModo(true);
 
   // =========================================================
-  // CASILLA DESPLEGABLE COMPACTA DE ÁREA (TIPO APPLE)
+  // 3. INTERACCIÓN DEL SELECT PERSONALIZADO DE ÁREAS
+  // Aquí programé la apertura, selección y cierre del menú con iconos
   // =========================================================
+
+  // Abrir o cerrar el menú al hacer clic sobre el botón trigger
   categoriaTrigger?.addEventListener('click', (e) => {
     e.stopPropagation();
     const isOpen = customSelectWrapper.classList.toggle('open');
@@ -117,6 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     customSelectWrapper.classList.remove('shake');
   });
 
+  // Cuando el usuario hace clic en una opción de la lista
   dropdownItems.forEach((item) => {
     item.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -124,19 +170,25 @@ document.addEventListener('DOMContentLoaded', () => {
       const text = item.querySelector('span').textContent;
       const iconSvg = item.querySelector('.item-icon').outerHTML;
 
+      // Actualizo el texto y el icono que se muestran en el botón principal
       triggerText.textContent = text;
       triggerIcon.innerHTML = iconSvg;
+
+      // Sincronizo el valor con el select nativo para que el formulario lo reconozca
       selectCategoria.value = val;
 
+      // Marco visualmente el elemento seleccionado
       dropdownItems.forEach((i) => i.classList.remove('selected'));
       item.classList.add('selected');
 
+      // Cierro el menú desplegable
       customSelectWrapper.classList.remove('open');
       categoriaTrigger.setAttribute('aria-expanded', 'false');
       customSelectWrapper.classList.remove('shake');
     });
   });
 
+  // Si el usuario hace clic en cualquier parte fuera del menú, lo cierro automáticamente
   document.addEventListener('click', (e) => {
     if (customSelectWrapper && !customSelectWrapper.contains(e.target)) {
       customSelectWrapper.classList.remove('open');
@@ -144,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Soporte para cerrar con la tecla Escape
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && customSelectWrapper?.classList.contains('open')) {
       customSelectWrapper.classList.remove('open');
@@ -155,10 +208,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // =========================================================
-  // VALIDACIÓN DE CAMPOS
+  // 4. VALIDACIÓN DE LOS CAMPOS DEL FORMULARIO
+  // Esta función revisa que no haya campos vacíos antes de enviar
   // =========================================================
   function validarCampos() {
-    // Si eligió identificarse (NO anónimo), validar nombre, carrera y grado
+    // Si el estudiante eligió 'No Anónimo', sus datos personales son obligatorios
     if (!esModoAnonimo) {
       if (!inputNombre.value.trim()) {
         inputNombre.focus();
@@ -177,10 +231,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    // El área temática siempre es obligatoria
     if (!selectCategoria.value) {
       if (customSelectWrapper) {
         customSelectWrapper.classList.remove('shake');
-        void customSelectWrapper.offsetWidth;
+        void customSelectWrapper.offsetWidth; // Reinicio la animación para que vuelva a vibrar
         customSelectWrapper.classList.add('shake');
         customSelectWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
@@ -188,39 +243,47 @@ document.addEventListener('DOMContentLoaded', () => {
       return false;
     }
 
+    // Validar el asunto
     if (!inputAsunto.value.trim()) {
       inputAsunto.focus();
       mostrarMensaje('Por favor escribe el asunto o título principal.');
       return false;
     }
 
+    // Validar la explicación del problema
     if (!textareaSituacion.value.trim()) {
       textareaSituacion.focus();
       mostrarMensaje('Por favor describe la situación o problema observado.');
       return false;
     }
 
+    // Validar la propuesta de solución
     if (!textareaSolucion.value.trim()) {
       textareaSolucion.focus();
       mostrarMensaje('Por favor explica tu propuesta de solución.');
       return false;
     }
 
+    // Si por alguna razón el correo destino estuviera vacío, uso el oficial por defecto
     if (!inputDestino.value.trim()) {
       inputDestino.value = DEFAULT_DESTINO;
     }
 
-    return true;
+    return true; // Todos los datos están correctos
   }
 
   // =========================================================
-  // ENVÍO REAL DIRECTO AL CORREO (FORMSUBMIT API)
+  // 5. ENVÍO REAL DIRECTO POR CORREO
+  // Aquí proceso el envío al presionar el botón 'Enviar Sugerencia'
   // =========================================================
   form?.addEventListener('submit', async (e) => {
+    // Evito que la página se recargue automáticamente
     e.preventDefault();
 
+    // Verifico que todos los campos requeridos estén llenos
     if (!validarCampos()) return;
 
+    // Recolecto los datos del formulario
     const destino = inputDestino.value.trim() || DEFAULT_DESTINO;
     const asunto = inputAsunto.value.trim();
     const esAnonimo = esModoAnonimo;
@@ -231,11 +294,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const situacion = textareaSituacion.value.trim();
     const solucion = textareaSolucion.value.trim();
 
-    // Estado visual de carga
+    // Activo el estado visual de carga en el botón (spinner rodando)
     if (btnEnviar) btnEnviar.disabled = true;
     if (btnSpinner) btnSpinner.hidden = false;
     if (btnTexto) btnTexto.textContent = 'Enviando propuesta...';
 
+    // Armo el objeto con toda la información que llegará al correo
     const payload = {
       _subject: `[Politécnico de los Llanos] Sugerencia (${esAnonimo ? 'Anónima' : remitente}): ${asunto}`,
       _template: 'table',
@@ -257,7 +321,9 @@ document.addEventListener('DOMContentLoaded', () => {
       'Fecha y Hora': new Date().toLocaleString('es-CO')
     };
 
-    // Timeout de 5 segundos para que NUNCA se quede la rueda girando infinito
+    // CONTROL DE TIEMPO (TIMEOUT DE 5 SEGUNDOS):
+    // Aquí uso AbortController para que, si el servidor de correo se demora más de 5 segundos,
+    // la petición se cancele de inmediato y el botón NUNCA se quede rodando infinito.
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
 
@@ -272,8 +338,10 @@ document.addEventListener('DOMContentLoaded', () => {
         signal: controller.signal
       });
 
+      // Si respondió antes de los 5 segundos, limpio el temporizador
       clearTimeout(timeoutId);
 
+      // Verifico si la respuesta vino en formato JSON o texto
       let data = {};
       const contentType = response.headers.get('content-type') || '';
       if (contentType.includes('application/json')) {
@@ -284,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (data.success === 'true' || data.success === true) {
-        // Entrega confirmada (sin mostrar el correo de recepción en pantalla)
+        // Entrega confirmada: abro mi modal de éxito mostrando el resumen de la propuesta
         abrirModal(
           '¡Propuesta Enviada con Éxito!',
           `Tu sugerencia se ha entregado en la bandeja de entrada institucional.`,
@@ -295,6 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
         );
         resetearFormulario();
       } else if (data.message && data.message.toLowerCase().includes('activation')) {
+        // En caso de que el servicio requiera autorización por primera vez en el correo
         abrirModal(
           '¡Paso Final de Activación!',
           `FormSubmit envió un correo de confirmación para autorizar la recepción automática.`,
@@ -315,6 +384,8 @@ document.addEventListener('DOMContentLoaded', () => {
         mostrarMensaje('No se pudo conectar con el servidor. Revisa tu conexión a internet.');
       }
     } finally {
+      // Este bloque 'finally' SIEMPRE se ejecuta:
+      // Aquí garantizo que el spinner se oculte y el botón vuelva a su texto normal
       clearTimeout(timeoutId);
       if (btnEnviar) btnEnviar.disabled = false;
       if (btnSpinner) btnSpinner.hidden = true;
@@ -323,7 +394,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // =========================================================
-  // MODAL DE CONFIRMACIÓN
+  // 6. GESTIÓN DEL MODAL EMERGENTE
+  // Funciones para abrir y cerrar la ventana de confirmación
   // =========================================================
   function abrirModal(titulo, desc, detallesHTML) {
     if (!modalConfirmacion) return;
@@ -338,13 +410,15 @@ document.addEventListener('DOMContentLoaded', () => {
     modalConfirmacion.hidden = true;
   }
 
+  // Cerrar al dar clic en el botón 'Entendido' o en el fondo oscuro
   btnModalCerrar?.addEventListener('click', cerrarModal);
   modalConfirmacion?.addEventListener('click', (e) => {
     if (e.target === modalConfirmacion) cerrarModal();
   });
 
   // =========================================================
-  // LIMPIEZA DEL FORMULARIO
+  // 7. LIMPIEZA Y RESTAURACIÓN DEL FORMULARIO
+  // Esta función resetea los campos después de un envío exitoso
   // =========================================================
   function resetearFormulario() {
     form.reset();
@@ -353,11 +427,14 @@ document.addEventListener('DOMContentLoaded', () => {
     triggerText.textContent = 'Selecciona un área...';
     triggerIcon.innerHTML = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg>`;
     dropdownItems.forEach((i) => i.classList.remove('selected'));
+    
+    // Regreso siempre al modo anónimo por defecto
     aplicarModo(true);
   }
 
   // =========================================================
-  // NOTIFICACIÓN FLOTANTE TIPO TOAST
+  // 8. NOTIFICACIÓN FLOTANTE (TOAST)
+  // Mensajes flotantes temporales que avisan al usuario de errores o recordatorios
   // =========================================================
   let alertaTimer = null;
   function mostrarMensaje(texto) {
@@ -367,6 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
     alerta.classList.remove('hide');
     alerta.classList.add('show');
 
+    // Desaparece automáticamente después de 4.5 segundos
     alertaTimer = setTimeout(() => {
       alerta.classList.remove('show');
       alerta.classList.add('hide');

@@ -1,10 +1,14 @@
 /* =========================================================
    POLITÉCNICO DE LOS LLANOS - BUZÓN ESTUDIANTIL
-   Diseño Formal Institucional en Modo Blanco (Light Mode)
-   Animaciones Suaves y Fluidas Tipo Apple
+   ---------------------------------------------------------
+   Aquí definí todos los estilos visuales de mi plataforma.
+   Elegí un diseño formal en modo claro (Light Mode) con fondo blanco,
+   usando el rojo representativo del Politécnico de los Llanos (#dc2626)
+   para botones y acentos, y animaciones de aceleración tipo Apple.
    ========================================================= */
 
 :root {
+  /* Variables de colores principales para reutilizarlas en todo el código */
   --bg-main: #f8fafc;
   --bg-card: #ffffff;
   --bg-field: #ffffff;
@@ -16,7 +20,7 @@
   --text-secondary: #475569;
   --text-muted: #64748b;
 
-  /* Rojo Institucional (Politécnico de los Llanos) */
+  /* Rojo Institucional del Politécnico de los Llanos */
   --red-primary: #dc2626;
   --red-hover: #b91c1c;
   --red-glow: rgba(220, 38, 38, 0.16);
@@ -28,7 +32,7 @@
   --shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.07);
   --shadow-card-hover: 0 16px 36px -6px rgba(15, 23, 42, 0.12);
 
-  /* Curvas de aceleración tipo Apple (Fluid iOS/macOS Spring Easing) */
+  /* Curvas de aceleración suaves tipo Apple (Fluid Spring Easing) */
   --apple-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --apple-ease-slow: cubic-bezier(0.2, 0.9, 0.25, 1);
   --duration-slow: 0.85s;
@@ -63,7 +67,10 @@ body {
 }
 
 /* =========================================================
-   ANIMACIONES DE ENTRADA PROGRESIVA (APPLE STAGGER LOAD)
+   ANIMACIONES DE ENTRADA PROGRESIVA (TIPO APPLE)
+   Aquí creé estas animaciones 'appleFadeUp' y 'appleScaleIn'
+   para que cuando cargue la página, los elementos aparezcan
+   deslizándose suavemente hacia arriba con efecto de flotación.
    ========================================================= */
 
 @keyframes appleFadeUp {
@@ -88,7 +95,8 @@ body {
   }
 }
 
-/* Encabezado */
+/* ENCABEZADO:
+   Aquí estilicé el bloque con el logo, el nombre institucional y el título */
 .header {
   border-bottom: 1px solid var(--border-line);
   padding-bottom: 1.75rem;
@@ -103,7 +111,7 @@ body {
   margin-bottom: 1.25rem;
 }
 
-/* Logo Oficial con micro-animación fluida */
+/* Logo Oficial: le puse forma redondeada y un efecto hover interactivo */
 .logo-img {
   width: 60px;
   height: 60px;
@@ -151,7 +159,9 @@ body {
 }
 
 /* =========================================================
-   TARJETA DE FORMULARIO CON ANIMACIÓN DE ENTRADA Y LEVITACIÓN
+   TARJETA DEL FORMULARIO PRINCIPAL
+   Aquí diseñé la caja blanca contenedora con sombra suave
+   y la línea roja institucional de 4px en la parte superior.
    ========================================================= */
 
 .form-card {
@@ -170,7 +180,7 @@ body {
   box-shadow: var(--shadow-card-hover);
 }
 
-/* Secciones Formales con Entrada Escalonada */
+/* Secciones internas del formulario con animación de entrada escalonada */
 .form-section {
   border: none;
   border-top: 1px solid var(--border-line);
@@ -183,6 +193,7 @@ body {
 .form-section:nth-of-type(2) { animation-delay: 0.45s; }
 .form-section:nth-of-type(3) { animation-delay: 0.58s; }
 
+/* Título de cada sección con un indicador vertical rojo a la izquierda */
 .section-title {
   font-size: 0.95rem;
   font-weight: 700;
@@ -290,6 +301,10 @@ label {
 
 /* =========================================================
    BOTÓN SIMPLE Y DIRECTO DE MODO ANÓNIMO
+   Aquí diseñé el botón que conmuta entre Anónimo y No Anónimo.
+   Le puse fondo verde suave cuando está activo (is-anonimo)
+   para transmitir privacidad y seguridad, y fondo azul suave
+   cuando pasa a modo identificado (is-no-anonimo).
    ========================================================= */
 
 .toggle-mode-container {
@@ -352,6 +367,8 @@ label {
   letter-spacing: 0.01em;
 }
 
+/* Esta regla la forcé con '!important' para garantizar que los campos
+   personales nunca aparezcan a menos que se desactive el modo anónimo */
 #seccionDatosEstudiante.is-hidden {
   display: none !important;
 }
@@ -538,7 +555,10 @@ label {
 }
 
 /* =========================================================
-   CAMPOS DE ENTRADA CON TRANSICIÓN SUAVE TIPO APPLE
+   CAMPOS DE ENTRADA Y TEXTAREAS
+   Aquí configuré el diseño de todos los campos de texto.
+   Al hacer clic adentro (focus), se iluminan con un borde rojo institucional
+   y un resplandor suave para indicarle al usuario dónde está escribiendo.
    ========================================================= */
 
 input[type="text"],
@@ -762,7 +782,10 @@ textarea {
 }
 
 /* =========================================================
-   SPINNER Y MODAL ELEGANTE
+   SPINNER DE CARGA Y VENTANA MODAL DE ÉXITO
+   Aquí diseñé la animación del spinner que gira dentro del botón
+   y la ventana emergente modal que aparece con desenfoque de fondo
+   (backdrop-filter) y un icono verde de verificación cuando se envía la propuesta.
    ========================================================= */
 
 .btn-spinner {
