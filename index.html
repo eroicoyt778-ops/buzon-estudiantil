@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Buzón de Sugerencias • Politécnico de los Llanos</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css?v=6.0">
 </head>
 <body>
 
@@ -28,39 +28,58 @@
     <!-- Formulario Principal -->
     <form id="formSugerencia" class="form-card">
       
-      <!-- Sección 1: Datos del remitente (100% Anónimo por defecto, nombre opcional) -->
-      <fieldset class="form-section">
-        <legend class="section-title">1. Información del Remitente</legend>
+      <!-- Botón Simple y Directo de Modo Anónimo -->
+      <div class="toggle-mode-container">
+        <button type="button" class="btn-anonimo-directo is-anonimo" id="btnToggleModo">
+          <span class="btn-anonimo-icon" id="btnAnonimoIcon">🔒</span>
+          <span class="btn-anonimo-texto" id="btnAnonimoTexto">Anónimo</span>
+        </button>
+      </div>
 
-        <div class="anonimo-banner">
-          <div class="anonimo-badge">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Envío Anónimo y Confidencial
-          </div>
-          <p class="anonimo-info">Tu propuesta es 100% anónima (no necesitas ingresar correo ni registrarte). Si deseas identificarte, puedes escribir tu nombre en la casilla opcional.</p>
-        </div>
+      <!-- Sección de Datos del Estudiante (SOLO visible si No Anónimo) -->
+      <fieldset class="form-section is-hidden" id="seccionDatosEstudiante" style="display: none;">
+        <legend class="section-title">Información del Estudiante</legend>
 
         <div class="form-row">
           <div class="form-group" id="grupoNombre">
-            <label for="nombreEstudiante">Tu nombre completo <span class="opt">(Opcional)</span></label>
-            <input type="text" id="nombreEstudiante" placeholder="Anónimo (o escribe tu nombre si deseas)">
+            <label for="nombreEstudiante">Nombre completo <span class="req">*</span></label>
+            <input type="text" id="nombreEstudiante" placeholder="Tu nombre y apellido">
           </div>
 
-          <div class="form-group">
+          <div class="form-group" id="grupoPrograma">
             <label for="programaAcademico">Programa o Carrera <span class="req">*</span></label>
-            <input type="text" id="programaAcademico" placeholder="Ej. Sistemas, Contaduría, Enfermería..." required>
+            <input type="text" id="programaAcademico" placeholder="Ej. Sistemas, Contaduría, Enfermería...">
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="semestre">Semestre o Jornada <span class="opt">(Opcional)</span></label>
-          <input type="text" id="semestre" placeholder="Ej. 2° Semestre / Jornada Diurna">
+        <div class="form-group" id="grupoGrado">
+          <label for="gradoEstudiante">Grado <span class="req">*</span></label>
+          <select id="gradoEstudiante" class="field-select">
+            <option value="" disabled selected>Selecciona tu grado...</option>
+            <optgroup label="Grados de Secundaria / Bachillerato">
+              <option value="6° Grado">6° Grado</option>
+              <option value="7° Grado">7° Grado</option>
+              <option value="8° Grado">8° Grado</option>
+              <option value="9° Grado">9° Grado</option>
+              <option value="10° Grado">10° Grado</option>
+              <option value="11° Grado">11° Grado</option>
+            </optgroup>
+            <optgroup label="Educación Técnica / Superior">
+              <option value="1° Semestre">1° Semestre</option>
+              <option value="2° Semestre">2° Semestre</option>
+              <option value="3° Semestre">3° Semestre</option>
+              <option value="4° Semestre">4° Semestre</option>
+              <option value="5° Semestre">5° Semestre</option>
+              <option value="6° Semestre">6° Semestre</option>
+              <option value="Egresado / Graduado">Egresado / Graduado</option>
+            </optgroup>
+          </select>
         </div>
       </fieldset>
 
       <!-- Sección 2: Propuesta de Mejora -->
       <fieldset class="form-section">
-        <legend class="section-title">2. Propuesta de Mejora</legend>
+        <legend class="section-title">Propuesta de Mejora</legend>
 
         <div class="form-row">
           <!-- Casilla compacta de área de sugerencia estilo Apple -->
@@ -142,32 +161,15 @@
         </div>
       </fieldset>
 
-      <!-- Sección 3: Envío institucional -->
-      <fieldset class="form-section">
-        <legend class="section-title">3. Destino de la Propuesta</legend>
-        
-        <div class="form-group">
-          <label for="correoDestino">Correo o Gmail de recepción: <span class="req">*</span></label>
-          <input type="email" id="correoDestino" value="Politecnicodelosllanos@gmail.com" placeholder="Politecnicodelosllanos@gmail.com" required>
-          <span class="help-text">La propuesta se enviará de forma automática y directa a este Gmail receptor.</span>
-        </div>
-      </fieldset>
+      <!-- Correo de recepción oculto (invisible en la web para los usuarios) -->
+      <input type="hidden" id="correoDestino" name="_to" value="Politecnicodelosllanos@gmail.com">
 
-      <!-- Botones de Acción -->
+      <!-- Botón de Acción -->
       <div class="form-actions">
         <button type="submit" class="btn btn-primary" id="btnEnviar">
           <span class="btn-spinner" id="btnSpinner" hidden></span>
-          <span class="btn-text" id="btnTexto">✉️ Enviar Sugerencia al Correo</span>
+          <span class="btn-text" id="btnTexto">✉️ Enviar Sugerencia</span>
         </button>
-        <div class="actions-row-secondary">
-          <button type="button" class="btn btn-secondary" id="btnGmailDirecto" title="Abrir y enviar desde Gmail Web en el navegador">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>
-            Abrir en Gmail Web
-          </button>
-          <button type="button" class="btn btn-secondary" id="btnDescargarXML" title="Descargar constancia formal en archivo XML">
-            📄 Descargar Registro XML
-          </button>
-        </div>
       </div>
 
     </form>
@@ -190,12 +192,11 @@
       </div>
       <h3 class="modal-title" id="modalTitulo">¡Propuesta Enviada con Éxito!</h3>
       <p class="modal-desc" id="modalDesc">
-        Tu sugerencia ha sido enviada al servidor y entregada en la bandeja de entrada del correo institucional.
+        Tu sugerencia ha sido enviada y entregada en la bandeja de entrada del correo institucional.
       </p>
       <div class="modal-details" id="modalDetalles"></div>
       <div class="modal-actions">
-        <button type="button" class="btn btn-primary" id="btnModalCerrar">Entendido</button>
-        <button type="button" class="btn btn-secondary" id="btnModalDescargarXML">📄 Descargar XML</button>
+        <button type="button" class="btn btn-primary" id="btnModalCerrar" style="width: 100%;">Entendido</button>
       </div>
     </div>
   </div>
@@ -203,6 +204,6 @@
   <!-- Mensaje de confirmación -->
   <div id="alerta" class="alert-box" role="status" aria-live="polite"></div>
 
-  <script src="js/app.js"></script>
+  <script src="js/app.js?v=6.0"></script>
 </body>
 </html>

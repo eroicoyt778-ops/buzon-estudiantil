@@ -1,14 +1,20 @@
 /**
  * POLITÉCNICO DE LOS LLANOS - BUZÓN ESTUDIANTIL
- * Controlador del formulario de sugerencias, envío directo por correo (FormSubmit / Gmail)
- * y generación de datos estructurados en XML / XSLT.
+ * Controlador del formulario de sugerencias con selector de modo (Anónimo vs No Anónimo),
+ * ocultamiento condicional de campos y envío directo a Gmail / Correo institucional.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('formSugerencia');
+  const btnToggleModo = document.getElementById('btnToggleModo');
+  const btnAnonimoIcon = document.getElementById('btnAnonimoIcon');
+  const btnAnonimoTexto = document.getElementById('btnAnonimoTexto');
+  const seccionDatosEstudiante = document.getElementById('seccionDatosEstudiante');
+
   const inputNombre = document.getElementById('nombreEstudiante');
   const inputPrograma = document.getElementById('programaAcademico');
-  const inputSemestre = document.getElementById('semestre');
+  const selectGrado = document.getElementById('gradoEstudiante');
+
   const selectCategoria = document.getElementById('categoria');
   const customSelectWrapper = document.getElementById('customSelectWrapper');
   const categoriaTrigger = document.getElementById('categoriaTrigger');
@@ -25,15 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnEnviar = document.getElementById('btnEnviar');
   const btnSpinner = document.getElementById('btnSpinner');
   const btnTexto = document.getElementById('btnTexto');
-  const btnGmailDirecto = document.getElementById('btnGmailDirecto');
-  const btnDescargarXML = document.getElementById('btnDescargarXML');
 
   const modalConfirmacion = document.getElementById('modalConfirmacion');
   const modalTitulo = document.getElementById('modalTitulo');
   const modalDesc = document.getElementById('modalDesc');
   const modalDetalles = document.getElementById('modalDetalles');
   const btnModalCerrar = document.getElementById('btnModalCerrar');
-  const btnModalDescargarXML = document.getElementById('btnModalDescargarXML');
 
   // Correo de recepción por defecto (Oficial Institucional)
   const DEFAULT_DESTINO = 'Politecnicodelosllanos@gmail.com';
@@ -41,7 +44,72 @@ document.addEventListener('DOMContentLoaded', () => {
     inputDestino.value = DEFAULT_DESTINO;
   }
 
-  // Abrir / Cerrar casilla desplegable con animación fluida tipo Apple
+  // =========================================================
+  // BOTÓN SIMPLE Y DIRECTO (ANÓNIMO VS NO ANÓNIMO)
+  // =========================================================
+  let esModoAnonimo = true; // Por defecto es Anónimo
+
+  function aplicarModo(anonimo, enfocar = false) {
+    esModoAnonimo = Boolean(anonimo);
+
+    if (esModoAnonimo) {
+      if (btnToggleModo) {
+        btnToggleModo.className = 'btn-anonimo-directo is-anonimo';
+        btnToggleModo.setAttribute('aria-pressed', 'true');
+      }
+      if (btnAnonimoIcon) btnAnonimoIcon.textContent = '🔒';
+      if (btnAnonimoTexto) btnAnonimoTexto.textContent = 'Anónimo';
+
+      if (seccionDatosEstudiante) {
+        seccionDatosEstudiante.classList.add('is-hidden');
+        seccionDatosEstudiante.style.display = 'none';
+      }
+      if (inputNombre) {
+        inputNombre.required = false;
+        inputNombre.value = '';
+      }
+      if (inputPrograma) {
+        inputPrograma.required = false;
+        inputPrograma.value = '';
+      }
+      if (selectGrado) {
+        selectGrado.required = false;
+        selectGrado.value = '';
+      }
+    } else {
+      if (btnToggleModo) {
+        btnToggleModo.className = 'btn-anonimo-directo is-no-anonimo';
+        btnToggleModo.setAttribute('aria-pressed', 'false');
+      }
+      if (btnAnonimoIcon) btnAnonimoIcon.textContent = '👤';
+      if (btnAnonimoTexto) btnAnonimoTexto.textContent = 'No Anónimo';
+
+      if (seccionDatosEstudiante) {
+        seccionDatosEstudiante.classList.remove('is-hidden');
+        seccionDatosEstudiante.style.display = 'block';
+      }
+      if (inputNombre) inputNombre.required = true;
+      if (inputPrograma) inputPrograma.required = true;
+      if (selectGrado) selectGrado.required = true;
+
+      if (enfocar && inputNombre) {
+        setTimeout(() => inputNombre.focus(), 80);
+      }
+    }
+  }
+
+  // Click en el botón conmuta directamente entre Anónimo y No Anónimo
+  btnToggleModo?.addEventListener('click', (e) => {
+    e.preventDefault();
+    aplicarModo(!esModoAnonimo, true);
+  });
+
+  // Inicializar en Anónimo
+  aplicarModo(true);
+
+  // =========================================================
+  // CASILLA DESPLEGABLE COMPACTA DE ÁREA (TIPO APPLE)
+  // =========================================================
   categoriaTrigger?.addEventListener('click', (e) => {
     e.stopPropagation();
     const isOpen = customSelectWrapper.classList.toggle('open');
@@ -49,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
     customSelectWrapper.classList.remove('shake');
   });
 
-  // Selección de opción dentro de la casilla compacta
   dropdownItems.forEach((item) => {
     item.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -70,7 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Cerrar desplegable al hacer clic afuera
   document.addEventListener('click', (e) => {
     if (customSelectWrapper && !customSelectWrapper.contains(e.target)) {
       customSelectWrapper.classList.remove('open');
@@ -78,7 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Cerrar desplegable con tecla Escape
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && customSelectWrapper?.classList.contains('open')) {
       customSelectWrapper.classList.remove('open');
@@ -89,108 +154,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Escapar caracteres especiales para XML seguro
-  function escaparXML(str) {
-    return (str || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&apos;');
-  }
-
-  // Generación del documento XML estructurado (compatible con estilo.xsl)
-  function generarXML() {
-    const nombreIngresado = inputNombre.value.trim();
-    const esAnonimo = !nombreIngresado;
-    const remitente = esAnonimo ? 'Anónimo (Identidad protegida)' : nombreIngresado;
-    const correoContacto = 'No aplica (Envío Anónimo / Confidencial)';
-    const programa = inputPrograma.value.trim() || 'No especificado';
-    const semestre = inputSemestre.value.trim() || 'No especificado';
-    const categoria = selectCategoria.value || 'General';
-    const asunto = inputAsunto.value.trim() || 'Sin asunto';
-    const situacion = textareaSituacion.value.trim() || 'Sin descripción';
-    const solucion = textareaSolucion.value.trim() || 'Sin propuesta';
-    const fecha = new Date().toISOString().split('T')[0];
-
-    return `<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/xsl" href="estilo.xsl"?>
-<buzonEstudiantil institucion="Politécnico de los Llanos">
-  <fechaRegistro>${fecha}</fechaRegistro>
-  <remitente anonimo="${esAnonimo}">
-    <nombre>${escaparXML(remitente)}</nombre>
-    <correo>${escaparXML(correoContacto)}</correo>
-    <programa>${escaparXML(programa)}</programa>
-    <semestre>${escaparXML(semestre)}</semestre>
-  </remitente>
-  <propuesta>
-    <area>${escaparXML(categoria)}</area>
-    <asunto>${escaparXML(asunto)}</asunto>
-    <situacionActual>${escaparXML(situacion)}</situacionActual>
-    <solucionPropuesta>${escaparXML(solucion)}</solucionPropuesta>
-  </propuesta>
-</buzonEstudiantil>`;
-  }
-
-  // Descarga del archivo XML en el navegador del usuario
-  function descargarArchivoXML() {
-    const asunto = inputAsunto.value.trim() || 'sugerencia';
-    const xmlContent = generarXML();
-    const blob = new Blob([xmlContent], { type: 'application/xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    const safeName = asunto.toLowerCase().replace(/[^a-z0-9]/g, '-').slice(0, 30) || 'propuesta';
-    a.href = url;
-    a.download = `sugerencia-${safeName}.xml`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    mostrarMensaje('✓ Archivo XML generado y descargado correctamente.');
-  }
-
-  // Generar redacción formal para el cuerpo del correo
-  function generarCuerpoCorreo() {
-    const nombreIngresado = inputNombre.value.trim();
-    const esAnonimo = !nombreIngresado;
-    const remitente = esAnonimo ? 'Anónimo (Identidad protegida)' : nombreIngresado;
-    const programa = inputPrograma.value.trim() || 'No especificado';
-    const semestre = inputSemestre.value.trim() || 'No especificado';
-    const categoria = selectCategoria.value || 'General';
-    const asunto = inputAsunto.value.trim();
-    const situacion = textareaSituacion.value.trim();
-    const solucion = textareaSolucion.value.trim();
-    const xml = generarXML();
-
-    return `POLITÉCNICO DE LOS LLANOS
-BUZÓN DE SUGERENCIAS Y MEJORA DEL AMBIENTE ESTUDIANTIL
-============================================================
-
-DATOS DEL REMITENTE:
-• Tipo de propuesta: ${esAnonimo ? '100% ANÓNIMA' : 'ESTUDIANTE IDENTIFICADO'}
-• Nombre: ${remitente}
-• Programa académico: ${programa}
-• Semestre / Jornada: ${semestre}
-
-DETALLES DE LA PROPUESTA:
-• Área: ${categoria}
-• Asunto: ${asunto}
-
-1. SITUACIÓN ACTUAL OBSERVADA:
-${situacion}
-
-2. PROPUESTA DE SOLUCIÓN:
-${solucion}
-
-============================================================
-REGISTRO ESTRUCTURADO (FORMATO XML / XSLT):
-============================================================
-${xml}
-`;
-  }
-
-  // Validar campos requeridos
+  // =========================================================
+  // VALIDACIÓN DE CAMPOS
+  // =========================================================
   function validarCampos() {
+    // Si eligió identificarse (NO anónimo), validar nombre, carrera y grado
+    if (!esModoAnonimo) {
+      if (!inputNombre.value.trim()) {
+        inputNombre.focus();
+        mostrarMensaje('Por favor escribe tu nombre completo.');
+        return false;
+      }
+      if (!inputPrograma.value.trim()) {
+        inputPrograma.focus();
+        mostrarMensaje('Por favor escribe tu programa o carrera.');
+        return false;
+      }
+      if (!selectGrado.value) {
+        selectGrado.focus();
+        mostrarMensaje('Por favor selecciona tu grado.');
+        return false;
+      }
+    }
+
     if (!selectCategoria.value) {
       if (customSelectWrapper) {
         customSelectWrapper.classList.remove('shake');
@@ -198,13 +184,7 @@ ${xml}
         customSelectWrapper.classList.add('shake');
         customSelectWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-      mostrarMensaje('Por favor selecciona un área para tu propuesta.');
-      return false;
-    }
-
-    if (!inputPrograma.value.trim()) {
-      inputPrograma.focus();
-      mostrarMensaje('Por favor indica tu programa académico o carrera.');
+      mostrarMensaje('Por favor selecciona un área para tu sugerencia.');
       return false;
     }
 
@@ -233,7 +213,9 @@ ${xml}
     return true;
   }
 
-  // Acción 1: Envío REAL y directo a la bandeja de Gmail (FormSubmit API)
+  // =========================================================
+  // ENVÍO REAL DIRECTO AL CORREO (FORMSUBMIT API)
+  // =========================================================
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -241,38 +223,43 @@ ${xml}
 
     const destino = inputDestino.value.trim() || DEFAULT_DESTINO;
     const asunto = inputAsunto.value.trim();
-    const nombreIngresado = inputNombre.value.trim();
-    const esAnonimo = !nombreIngresado;
-    const remitente = esAnonimo ? 'Estudiante Anónimo' : nombreIngresado;
-    const programa = inputPrograma.value.trim() || 'No especificado';
-    const semestre = inputSemestre.value.trim() || 'No especificado';
-    const categoria = selectCategoria.value || 'General';
+    const esAnonimo = esModoAnonimo;
+    const remitente = esAnonimo ? 'Estudiante Anónimo' : inputNombre.value.trim();
+    const programa = esAnonimo ? 'No aplica (Envío Anónimo)' : inputPrograma.value.trim();
+    const grado = esAnonimo ? 'No aplica (Envío Anónimo)' : selectGrado.value;
+    const categoria = selectCategoria.value;
     const situacion = textareaSituacion.value.trim();
     const solucion = textareaSolucion.value.trim();
-    const xml = generarXML();
 
-    // Activar estado de carga visual
+    // Estado visual de carga
     if (btnEnviar) btnEnviar.disabled = true;
     if (btnSpinner) btnSpinner.hidden = false;
-    if (btnTexto) btnTexto.textContent = 'Enviando propuesta a tu Gmail...';
+    if (btnTexto) btnTexto.textContent = 'Enviando propuesta...';
 
     const payload = {
-      _subject: `[Politécnico de los Llanos] Sugerencia: ${asunto}`,
+      _subject: `[Politécnico de los Llanos] Sugerencia (${esAnonimo ? 'Anónima' : remitente}): ${asunto}`,
       _template: 'table',
       _captcha: 'false',
       _replyto: 'noreply@estudiantes.xuanii.com',
       'Institución': 'Politécnico de los Llanos',
-      'Tipo de Envío': esAnonimo ? '100% Anónimo (Identidad protegida)' : 'Estudiante identificado',
+      'Modo de Envío': esAnonimo ? '100% Anónimo (Identidad protegida)' : 'Estudiante Identificado',
       'Remitente': remitente,
-      'Programa Académico': programa,
-      'Semestre / Jornada': semestre,
+      ...(esAnonimo
+        ? {}
+        : {
+            'Programa o Carrera': programa,
+            'Grado': grado
+          }),
       'Área de la Sugerencia': categoria,
       'Asunto': asunto,
-      'Problema / Necesidad Observada': situacion,
+      'Problema / Situación Observada': situacion,
       'Propuesta de Solución': solucion,
-      'Fecha y Hora': new Date().toLocaleString('es-CO'),
-      'Estructura XML': xml
+      'Fecha y Hora': new Date().toLocaleString('es-CO')
     };
+
+    // Timeout de 5 segundos para que NUNCA se quede la rueda girando infinito
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
 
     try {
       const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(destino)}`, {
@@ -281,76 +268,63 @@ ${xml}
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal
       });
 
-      const data = await response.json();
+      clearTimeout(timeoutId);
+
+      let data = {};
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const textResp = await response.text();
+        data = { success: response.ok, message: textResp };
+      }
 
       if (data.success === 'true' || data.success === true) {
-        // Entrega confirmada en Gmail
+        // Entrega confirmada (sin mostrar el correo de recepción en pantalla)
         abrirModal(
-          '¡Propuesta Entregada con Éxito!',
-          `Tu sugerencia se envió correctamente y ha sido entregada en la bandeja de Gmail:`,
-          `<strong>Bandeja receptora:</strong> ${destino}<br>
-           <strong>Remitente:</strong> ${remitente}<br>
+          '¡Propuesta Enviada con Éxito!',
+          `Tu sugerencia se ha entregado en la bandeja de entrada institucional.`,
+          `<strong>Tipo de envío:</strong> ${esAnonimo ? '100% Anónimo' : 'Estudiante Identificado'}<br>
+           ${!esAnonimo ? `<strong>Remitente:</strong> ${remitente}<br><strong>Programa:</strong> ${programa}<br><strong>Grado:</strong> ${grado}<br>` : ''}
            <strong>Área:</strong> ${categoria}<br>
            <strong>Asunto:</strong> ${asunto}`
         );
-        resetearFormularioPreservandoDestino();
+        resetearFormulario();
       } else if (data.message && data.message.toLowerCase().includes('activation')) {
-        // Correo de activación enviado por FormSubmit
         abrirModal(
           '¡Paso Final de Activación!',
-          `FormSubmit envió un correo de activación a <strong>${destino}</strong> para autorizar la recepción automática.`,
+          `FormSubmit envió un correo de confirmación para autorizar la recepción automática.`,
           `Para recibir este y los próximos mensajes:<br>
-           1. Abre tu Gmail en <strong>${destino}</strong>.<br>
+           1. Abre tu bandeja de correo institucional.<br>
            2. Abre el correo de FormSubmit y pulsa en <em>"Activate Form"</em> (solo se hace 1 vez).<br>
-           3. ¡Listo! A partir de ese clic, todas las propuestas llegarán en automático a tu Gmail.`
+           3. ¡Listo! A partir de ese clic, todas las propuestas llegarán en automático.`
         );
       } else {
-        mostrarMensaje(data.message || 'No se pudo entregar por la red. Puedes usar "Abrir en Gmail Web".');
+        mostrarMensaje(data.message || 'No se pudo entregar por la red. Por favor intenta de nuevo.');
       }
     } catch (err) {
-      console.warn('Error al conectar con FormSubmit:', err);
-      mostrarMensaje('No hubo conexión directa. Abriendo plantilla en Gmail Web...');
-      abrirGmailWeb();
+      clearTimeout(timeoutId);
+      console.warn('Error al conectar con el servicio de correo:', err);
+      if (err.name === 'AbortError') {
+        mostrarMensaje('El servidor tardó en responder. Por favor intenta de nuevo.');
+      } else {
+        mostrarMensaje('No se pudo conectar con el servidor. Revisa tu conexión a internet.');
+      }
     } finally {
+      clearTimeout(timeoutId);
       if (btnEnviar) btnEnviar.disabled = false;
       if (btnSpinner) btnSpinner.hidden = true;
-      if (btnTexto) btnTexto.textContent = '✉️ Enviar Sugerencia al Correo';
+      if (btnTexto) btnTexto.textContent = '✉️ Enviar Sugerencia';
     }
   });
 
-  // Acción 2: Abrir directamente en Gmail Web en el navegador
-  function abrirGmailWeb() {
-    if (!validarCampos()) return;
-
-    const destino = inputDestino.value.trim() || DEFAULT_DESTINO;
-    const asunto = inputAsunto.value.trim();
-    const asuntoCompleto = `[Politécnico de los Llanos] Sugerencia: ${asunto}`;
-    const cuerpo = generarCuerpoCorreo();
-
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(destino)}&su=${encodeURIComponent(asuntoCompleto)}&body=${encodeURIComponent(cuerpo)}`;
-    window.open(gmailUrl, '_blank', 'noopener,noreferrer');
-    mostrarMensaje('Abriendo Gmail Web con la propuesta formal redactada...');
-  }
-
-  btnGmailDirecto?.addEventListener('click', (e) => {
-    e.preventDefault();
-    abrirGmailWeb();
-  });
-
-  // Acción 3: Descargar constancia XML
-  btnDescargarXML?.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (!inputAsunto.value.trim() && !textareaSolucion.value.trim()) {
-      mostrarMensaje('Por favor completa al menos el asunto y la propuesta para generar el XML.');
-      return;
-    }
-    descargarArchivoXML();
-  });
-
-  // Modal de confirmación
+  // =========================================================
+  // MODAL DE CONFIRMACIÓN
+  // =========================================================
   function abrirModal(titulo, desc, detallesHTML) {
     if (!modalConfirmacion) return;
     if (modalTitulo) modalTitulo.textContent = titulo;
@@ -365,24 +339,26 @@ ${xml}
   }
 
   btnModalCerrar?.addEventListener('click', cerrarModal);
-  btnModalDescargarXML?.addEventListener('click', () => {
-    descargarArchivoXML();
-  });
-
   modalConfirmacion?.addEventListener('click', (e) => {
     if (e.target === modalConfirmacion) cerrarModal();
   });
 
-  function resetearFormularioPreservandoDestino() {
+  // =========================================================
+  // LIMPIEZA DEL FORMULARIO
+  // =========================================================
+  function resetearFormulario() {
     form.reset();
     inputDestino.value = DEFAULT_DESTINO;
     selectCategoria.value = '';
     triggerText.textContent = 'Selecciona un área...';
     triggerIcon.innerHTML = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg>`;
     dropdownItems.forEach((i) => i.classList.remove('selected'));
+    aplicarModo(true);
   }
 
-  // Notificación flotante fluida tipo Apple
+  // =========================================================
+  // NOTIFICACIÓN FLOTANTE TIPO TOAST
+  // =========================================================
   let alertaTimer = null;
   function mostrarMensaje(texto) {
     if (!alerta) return;
