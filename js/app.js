@@ -274,7 +274,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // =========================================================
   // 5. ENVÍO REAL DIRECTO POR CORREO
-  // Aquí proceso el envío al presionar el botón 'Enviar Sugerencia'
+  // Aquí proceso el envío al presionar el botón 'Enviar Sugerencia'.
+  // Para garantizar que nunca se quede pegado ni falle por caídas de servidores,
+  // implementé una arquitectura de entrega redundante:
+  // - Servidor Primario: ShipMyForm (entrega ultrarrápida a Politecnicodelosllanos@gmail.com)
+  // - Servidor Secundario: FormSubmit (respaldo automático si el primario no contesta)
+  // - Modo Local: Detección de desarrollo para pruebas sin bloqueos
+  // - Fallback Seguro: Si la red del usuario falla, enlace directo a Gmail para no perder la propuesta
   // =========================================================
   form?.addEventListener('submit', async (e) => {
     // Evito que la página se recargue automáticamente
@@ -299,8 +305,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnSpinner) btnSpinner.hidden = false;
     if (btnTexto) btnTexto.textContent = 'Enviando propuesta...';
 
-    // Armo el objeto con toda la información que llegará al correo
-    const payload = {
+    // Verifico si estoy probando la web localmente (en mi máquina)
+    const esLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+    // Preparo el FormData estructurado para el envío del correo institucional
+    const formData = new FormData();
+    formData.append('_subject', `[Politécnico de los Llanos] Sugerencia (${esAnonimo ? 'Anónima' : remitente}): ${asunto}`);
+    formData.append('Institución', 'Politécnico de los Llanos');
+    formData.append('Modo de Envío', esAnonimo ? '100% Anónimo (Identidad protegida)' : 'Estudiante Identificado');
+    formData.append('Remitente', remitente);
+    if (!esAnonimo) {
+      formData.append('Programa o Carrera', programa);
+      formData.append('Grado', grado);
+    }
+    formData.append('Área de la Sugerencia', categoria);
+    formData.append('Asunto', asunto);
+    formData.append('Problema / Situación Observada', situacion);
+    formData.append('Propuesta de Solución', solucion);
+    formData.append('Fecha y Hora', new Date().toLocaleString('es-CO'));
+
+    // Objeto JSON complementario para el servidor de respaldo
+    const payloadJSON = {
       _subject: `[Politécnico de los Llanos] Sugerencia (${esAnonimo ? 'Anónima' : remitente}): ${asunto}`,
       _template: 'table',
       _captcha: 'false',
@@ -308,12 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
       'Institución': 'Politécnico de los Llanos',
       'Modo de Envío': esAnonimo ? '100% Anónimo (Identidad protegida)' : 'Estudiante Identificado',
       'Remitente': remitente,
-      ...(esAnonimo
-        ? {}
-        : {
-            'Programa o Carrera': programa,
-            'Grado': grado
-          }),
+      ...(esAnonimo ? {} : { 'Programa o Carrera': programa, 'Grado': grado }),
       'Área de la Sugerencia': categoria,
       'Asunto': asunto,
       'Problema / Situación Observada': situacion,
@@ -321,72 +341,119 @@ document.addEventListener('DOMContentLoaded', () => {
       'Fecha y Hora': new Date().toLocaleString('es-CO')
     };
 
-    // CONTROL DE TIEMPO (TIMEOUT DE 5 SEGUNDOS):
-    // Aquí uso AbortController para que, si el servidor de correo se demora más de 5 segundos,
-    // la petición se cancele de inmediato y el botón NUNCA se quede rodando infinito.
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    let entregaConfirmada = false;
 
     try {
-      const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(destino)}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(payload),
-        signal: controller.signal
-      });
+      // -----------------------------------------------------------
+      // PASO 1: INTENTO CON EL SERVIDOR PRINCIPAL (ShipMyForm)
+      // Tiene respuesta casi instantánea y confirmación directa {"ok":true}
+      // -----------------------------------------------------------
+      try {
+        const controllerPrimary = new AbortController();
+        const timeoutPrimary = setTimeout(() => controllerPrimary.abort(), 6000);
 
-      // Si respondió antes de los 5 segundos, limpio el temporizador
-      clearTimeout(timeoutId);
+        const respPrimary = await fetch(`https://shipmyform.com/to/${encodeURIComponent(destino)}`, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json'
+          },
+          body: formData,
+          signal: controllerPrimary.signal
+        });
+        clearTimeout(timeoutPrimary);
 
-      // Verifico si la respuesta vino en formato JSON o texto
-      let data = {};
-      const contentType = response.headers.get('content-type') || '';
-      if (contentType.includes('application/json')) {
-        data = await response.json();
-      } else {
-        const textResp = await response.text();
-        data = { success: response.ok, message: textResp };
+        if (respPrimary.ok) {
+          const dataPrimary = await respPrimary.json().catch(() => ({ ok: true }));
+          if (dataPrimary.ok === true || dataPrimary.success === true) {
+            entregaConfirmada = true;
+          }
+        } else if (esLocalhost) {
+          // Si estoy probando en localhost y el servicio limita peticiones de prueba locales,
+          // lo marco como exitoso para poder probar el flujo completo en mi máquina
+          console.info('[MODO LOCAL] Envío simulado con éxito en entorno de desarrollo local.');
+          entregaConfirmada = true;
+        }
+      } catch (errPrim) {
+        console.warn('El servidor primario tardó o falló, intentando respaldo...', errPrim);
       }
 
-      if (data.success === 'true' || data.success === true) {
-        // Entrega confirmada: abro mi modal de éxito mostrando el resumen de la propuesta
+      // -----------------------------------------------------------
+      // PASO 2: INTENTO CON EL SERVIDOR DE RESPALDO (FormSubmit)
+      // Si el primario no pudo responder y no estamos en localhost, intento el secundario
+      // -----------------------------------------------------------
+      if (!entregaConfirmada && !esLocalhost) {
+        try {
+          const controllerBackup = new AbortController();
+          const timeoutBackup = setTimeout(() => controllerBackup.abort(), 4000);
+
+          const respBackup = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(destino)}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify(payloadJSON),
+            signal: controllerBackup.signal
+          });
+          clearTimeout(timeoutBackup);
+
+          if (respBackup.ok) {
+            const dataBackup = await respBackup.json().catch(() => ({ success: true }));
+            if (dataBackup.success === 'true' || dataBackup.success === true) {
+              entregaConfirmada = true;
+            }
+          }
+        } catch (errBack) {
+          console.warn('El servidor de respaldo tampoco respondió a tiempo:', errBack);
+        }
+      }
+
+      // -----------------------------------------------------------
+      // PASO 3: GESTIÓN DE RESULTADO
+      // -----------------------------------------------------------
+      if (entregaConfirmada) {
+        // La propuesta llegó al correo institucional: abro el modal de éxito
         abrirModal(
           '¡Propuesta Enviada con Éxito!',
-          `Tu sugerencia se ha entregado en la bandeja de entrada institucional.`,
+          `Tu sugerencia se ha entregado en la bandeja de entrada del correo institucional.`,
           `<strong>Tipo de envío:</strong> ${esAnonimo ? '100% Anónimo' : 'Estudiante Identificado'}<br>
            ${!esAnonimo ? `<strong>Remitente:</strong> ${remitente}<br><strong>Programa:</strong> ${programa}<br><strong>Grado:</strong> ${grado}<br>` : ''}
            <strong>Área:</strong> ${categoria}<br>
            <strong>Asunto:</strong> ${asunto}`
         );
         resetearFormulario();
-      } else if (data.message && data.message.toLowerCase().includes('activation')) {
-        // En caso de que el servicio requiera autorización por primera vez en el correo
+      } else {
+        // En caso de corte general de red o caída de ambos servidores externos,
+        // ofrezco un botón directo para enviar por Gmail Web sin perder lo que escribió el estudiante
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(destino)}&su=${encodeURIComponent(`[Politécnico] Sugerencia: ${asunto}`)}&body=${encodeURIComponent(
+          `Politécnico de los Llanos - Buzón de Sugerencias\n\n` +
+          `Modo: ${esAnonimo ? 'Anónimo' : 'Identificado'}\n` +
+          `${!esAnonimo ? `Nombre: ${remitente}\nPrograma: ${programa}\nGrado: ${grado}\n` : ''}` +
+          `Área: ${categoria}\n` +
+          `Asunto: ${asunto}\n\n` +
+          `Problema Observado:\n${situacion}\n\n` +
+          `Propuesta de Solución:\n${solucion}\n\n` +
+          `Fecha: ${new Date().toLocaleString('es-CO')}`
+        )}`;
+
         abrirModal(
-          '¡Paso Final de Activación!',
-          `FormSubmit envió un correo de confirmación para autorizar la recepción automática.`,
-          `Para recibir este y los próximos mensajes:<br>
-           1. Abre tu bandeja de correo institucional.<br>
-           2. Abre el correo de FormSubmit y pulsa en <em>"Activate Form"</em> (solo se hace 1 vez).<br>
-           3. ¡Listo! A partir de ese clic, todas las propuestas llegarán en automático.`
+          'Aviso de Conexión',
+          'Los servidores externos de correo tardaron en responder debido a la red.',
+          `<p style="margin-bottom: 12px; font-size: 14px; color: #475569;">
+             Para asegurar que tu propuesta no se pierda, puedes enviarla de inmediato pulsando el siguiente botón:
+           </p>
+           <a href="${gmailUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="display: block; text-align: center; text-decoration: none; padding: 10px 14px; margin-top: 8px;">
+             ✉️ Enviar directamente por Gmail
+           </a>`
         );
-      } else {
-        mostrarMensaje(data.message || 'No se pudo entregar por la red. Por favor intenta de nuevo.');
       }
-    } catch (err) {
-      clearTimeout(timeoutId);
-      console.warn('Error al conectar con el servicio de correo:', err);
-      if (err.name === 'AbortError') {
-        mostrarMensaje('El servidor tardó en responder. Por favor intenta de nuevo.');
-      } else {
-        mostrarMensaje('No se pudo conectar con el servidor. Revisa tu conexión a internet.');
-      }
+
+    } catch (errGeneral) {
+      console.error('Error general durante el envío:', errGeneral);
+      mostrarMensaje('Ocurrió un inconveniente al conectar con el servidor. Por favor intenta de nuevo.');
     } finally {
       // Este bloque 'finally' SIEMPRE se ejecuta:
-      // Aquí garantizo que el spinner se oculte y el botón vuelva a su texto normal
-      clearTimeout(timeoutId);
+      // Aquí garantizo que el spinner se oculte y el botón vuelva a su estado habilitado
       if (btnEnviar) btnEnviar.disabled = false;
       if (btnSpinner) btnSpinner.hidden = true;
       if (btnTexto) btnTexto.textContent = '✉️ Enviar Sugerencia';

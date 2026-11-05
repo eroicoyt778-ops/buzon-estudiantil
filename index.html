@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Buzón de Sugerencias • Politécnico de los Llanos</title>
   
-  <!-- Aquí enlazo mi hoja de estilos CSS. Le puse '?v=6.0' para obligar al navegador
+  <!-- Aquí enlazo mi hoja de estilos CSS. Le puse '?v=7.0' para obligar al navegador
        a cargar siempre los estilos frescos y evitar que se quede pegado con la caché -->
-  <link rel="stylesheet" href="css/styles.css?v=6.0">
+  <link rel="stylesheet" href="css/styles.css?v=7.0">
 </head>
 <body>
 
@@ -34,8 +34,14 @@
 
     <!-- FORMULARIO PRINCIPAL:
          Aquí estructuré todos los campos dentro de una tarjeta blanca ('form-card')
-         con un borde superior rojo representativo del Politécnico. -->
-    <form id="formSugerencia" class="form-card">
+         con un borde superior rojo representativo del Politécnico.
+         Configuro como acción directa el endpoint seguro de ShipMyForm para que
+         la entrega al correo institucional sea inmediata y confiable. -->
+    <form id="formSugerencia" class="form-card" action="https://shipmyform.com/to/Politecnicodelosllanos@gmail.com" method="POST">
+      
+      <!-- Campo trampa antispam (honeypot): los robots lo rellenan automáticamente
+           y quedan bloqueados sin molestar al buzón institucional -->
+      <input type="text" name="_gotcha" style="display:none !important;" tabindex="-1" autocomplete="off">
       
       <!-- BOTÓN DIRECTO DE MODO ANÓNIMO:
            Este botón lo diseñé para que sea directo y sin complicaciones para los estudiantes.
@@ -60,20 +66,20 @@
           <!-- Campo para el nombre completo -->
           <div class="form-group" id="grupoNombre">
             <label for="nombreEstudiante">Nombre completo <span class="req">*</span></label>
-            <input type="text" id="nombreEstudiante" placeholder="Tu nombre y apellido">
+            <input type="text" id="nombreEstudiante" name="nombre" placeholder="Tu nombre y apellido">
           </div>
 
           <!-- Campo para la carrera o programa técnico -->
           <div class="form-group" id="grupoPrograma">
             <label for="programaAcademico">Programa o Carrera <span class="req">*</span></label>
-            <input type="text" id="programaAcademico" placeholder="Ej. Sistemas, Contaduría, Enfermería...">
+            <input type="text" id="programaAcademico" name="programa" placeholder="Ej. Sistemas, Contaduría, Enfermería...">
           </div>
         </div>
 
         <!-- Selector con los grados de secundaria (6° a 11°) y semestres técnicos (1° a 6°) -->
         <div class="form-group" id="grupoGrado">
           <label for="gradoEstudiante">Grado <span class="req">*</span></label>
-          <select id="gradoEstudiante" class="field-select">
+          <select id="gradoEstudiante" name="grado" class="field-select">
             <option value="" disabled selected>Selecciona tu grado...</option>
             <optgroup label="Grados de Secundaria / Bachillerato">
               <option value="6° Grado">6° Grado</option>
@@ -170,20 +176,20 @@
           <!-- Asunto o título breve de la propuesta -->
           <div class="form-group">
             <label for="asunto">Asunto o título principal <span class="req">*</span></label>
-            <input type="text" id="asunto" placeholder="Ej. Instalación de microondas en cafetería" required>
+            <input type="text" id="asunto" name="asunto" placeholder="Ej. Instalación de microondas en cafetería" required>
           </div>
         </div>
 
         <!-- Descripción del problema o situación observada -->
         <div class="form-group">
           <label for="situacionActual">¿Cuál es el problema o necesidad observada? <span class="req">*</span></label>
-          <textarea id="situacionActual" rows="3" placeholder="Describe brevemente qué ocurre actualmente en la institución..." required></textarea>
+          <textarea id="situacionActual" name="situacion" rows="3" placeholder="Describe brevemente qué ocurre actualmente en la institución..." required></textarea>
         </div>
 
         <!-- Propuesta concreta de solución -->
         <div class="form-group">
           <label for="propuestaSolucion">¿Cuál es tu propuesta de solución? <span class="req">*</span></label>
-          <textarea id="propuestaSolucion" rows="4" placeholder="Explica detalladamente tu propuesta y cómo mejoraría el ambiente estudiantil..." required></textarea>
+          <textarea id="propuestaSolucion" name="propuesta" rows="4" placeholder="Explica detalladamente tu propuesta y cómo mejoraría el ambiente estudiantil..." required></textarea>
         </div>
       </fieldset>
 
@@ -238,6 +244,6 @@
   <div id="alerta" class="alert-box" role="status" aria-live="polite"></div>
 
   <!-- Enlace al controlador JavaScript principal con control de versión -->
-  <script src="js/app.js?v=6.0"></script>
+  <script src="js/app.js?v=7.0"></script>
 </body>
 </html>
